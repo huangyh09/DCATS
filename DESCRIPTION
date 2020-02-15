@@ -1,0 +1,15 @@
+Package: DCATS
+Type: Package
+Title: Differential composition analysis tweaked with similarity in scRNA-seq 
+    data
+Version: 0.1.0
+Author: Hephaes Chuen Chau, Yuanhua Huang, Joshua Ho
+Maintainer: The package maintainer <yourself@somewhere.net>
+Description: Methods to detect the differential composition abundances between 
+    two conditions in singel-cell RNA-seq experiments, with or without 
+    replicates.
+License: GPL (>= 3)
+Imports: Matrix
+Imports: ggplot2, ggpubr, Matrix
+Encoding: UTF-8
+LazyData: true
