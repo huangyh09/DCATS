@@ -1,7 +1,7 @@
 [![Linux Build Status](https://travis-ci.org/huangyh09/DCATS.svg?branch=master)](https://travis-ci.org/huangyh09/DCATS)
 [![codecov.io](https://codecov.io/github/huangyh09/DCATS/coverage.svg?branch=master)](https://codecov.io/github/huangyh09/DCATS/?branch=master)
 
-# DCATS: Differential composition abundance tweaked with similarity for scRNA-seq data
+# DCATS: Differential composition analysis tweaked with similarity
 
 This R package contains methods to detect the differential composition 
 abundances between two conditions in singel-cell RNA-seq experiments, with or 
