@@ -11,8 +11,7 @@
 #' 
 #' @return a list containing \code{primary_count_matrix}, a large gene expression count matrix simulated from
 #' splatter, containing equal proportions of cells from different clusters; \code{subjects}, a list of
-#' gene expression profiles of different subjects; \code{seurat_object}, a seurat object created out of
-#' \code{primary_count_matrix}; \code{clustered_cells}, a list of gene expression profiles of cells from different clusters.
+#' gene expression profiles of different subjects; \code{cluster_lists}, a list of gene expression profiles of cells from different clusters.
 simulate_data <- function(x, y, replicates_number, subject_cellnumber){
   
   # extracting the number of clusters 
