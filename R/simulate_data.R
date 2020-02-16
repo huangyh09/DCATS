@@ -15,7 +15,7 @@
 #' \code{primary_count_matrix}; \code{clustered_cells}, a list of gene expression profiles of cells from different clusters.
 simulate_data <- function(x, y, replicates_number, subject_cellnumber){
   
-  #extracting the number of clusters 
+  # extracting the number of clusters 
   cluster_number <- length(x)
   
   # ensure that x and y are of the same dimensions 
@@ -66,10 +66,12 @@ simulate_data <- function(x, y, replicates_number, subject_cellnumber){
 renamecountmatrix <- function(x) {
   
   g <- x #Admit a count matrix of a subject, possible to admit multiple subjects
+  
   for (i in 1:length(g)) {
     newnames <- paste("subject",i,"Cell",1:dim(g[[i]])[2],sep="")
     colnames(g[[i]]) <- newnames
   }
+  
   g
 }
 
