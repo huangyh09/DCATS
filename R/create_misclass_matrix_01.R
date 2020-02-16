@@ -105,7 +105,7 @@ getmode <- function(v) {
   
   uniqv[which.max(tabulate(match(v, uniqv)))]
 }
-#end
+
 
 
 
