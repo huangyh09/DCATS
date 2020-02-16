@@ -6,7 +6,7 @@
 #' @param clust A vector labelling each cell to a cluster 
 #' 
 #' @return A sqaure matrix of a dimension equal to the number of clusters present in the data
-create_misclass_matrix_01<- function(bigM,clust) {
+create_misclass_matrix_01 <- function(bigM,clust) {
   
   #filtering bigM for the genes that are larger than the first quantiles 
   getVar <- apply(bigM, 1, var)
