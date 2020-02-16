@@ -109,7 +109,7 @@ detectcondA <- function(x) {
 
 
 #' Accessory function for test_DITASIC that find the number of matches of names of cells 
-#' in a cluster that belong to conditionA 
+#' in a cluster that belong to conditionB
 detectcondB <- function(x) {
   
   condB_subjectnames <- paste("subject",condBindex)
