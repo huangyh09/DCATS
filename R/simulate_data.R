@@ -27,7 +27,7 @@ simulate_data <- function(x, y, replicates_number, subject_cellnumber){
     simdc <- splatSimulateGroups(params.groups, # de.prob controls the probability a gene selected is differetially expressed; for the meaning of other parameters run "browseVignettes(splatter)".
                                  group.prob = rep(1/cluster_number,cluster_number),
                                  de.prob = rep(0.01,cluster_number),
-                                 de.facLoc = rep(0.1,cluster_number),
+                                 de.facLoc = rep(0.01,cluster_number),
                                  de.facScale = rep(0.8,cluster_number),
                                  verbose = FALSE)
   }
