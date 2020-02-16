@@ -13,7 +13,7 @@
 #' 
 #' @return A list whose first element is a vector containing the number of cell types which exhibit differential
 #' proportions between conditions, and whose second element is a vector containing the number of cell types which
-#' do not exhibit such property.
+#' do not exhibit such property. The third element is the table output of DiTASiC
 test_DITASIC <- function(N, x, y, replicates_number, subject_cellnumber, misclassfunction) {
   
   # create a vector that stores the result 
@@ -21,7 +21,7 @@ test_DITASIC <- function(N, x, y, replicates_number, subject_cellnumber, misclas
   negative_result <- c()
   
   # create simulated data and extract required objects 
-  result <- simulateData(x,y,replicatesNumber,subjectCellNumber)
+  result <- simulate_data(x,y,replicates_number,subject_cellnumber)
   countdc <- result[[1]]
   cluster_lists <- result[[3]]
   cluster_number <- length(x)
@@ -69,8 +69,8 @@ test_DITASIC <- function(N, x, y, replicates_number, subject_cellnumber, misclas
     subjectClusterNames <- lapply(seq_len(cluster_number),function(t){names(kout$cluster[kout$cluster==t])})
     
     # estimate the cell type counts for each condition base on name matches 
-    condAcounts <- unlist(lapply(subjectClusterNames,function(i){detectcondA(i)}))
-    condBcounts <- unlist(lapply(subjectClusterNames,function(i){detectcondB(i)}))
+    condAcounts <- unlist(lapply(seq_len(cluster_number),function(j) {sum(sapply(subjectClusterNames[[j]],function(t) {t %in% condAnames} ))} ))
+    condBcounts <- unlist(lapply(seq_len(cluster_number),function(j) {length(subjectClusterNames[[j]])-condAcounts[j]} ))
     
     # imputation of counts for absenct cell types 
     if (0 %in% condAcounts) {
@@ -93,27 +93,9 @@ test_DITASIC <- function(N, x, y, replicates_number, subject_cellnumber, misclas
     negative_result[i] <- sum(AR[,4] >= 0.05)
   }
   
-  list(positive_result,negative_result)
+  list(positive_result,negative_result,AR)
 }
 
 
-#' Accessory function for test_DITASIC that find the number of matches of names of cells 
-#' in a cluster that belong to conditionA 
-detectcondA <- function(x) {
-  
-  condA_subjectnames <- paste("subject",condAindex)
-  matches <- sapply(condA_subjectnames,function(j) {sum(str_detect(x,j))})
-  
-  matches <- sum(matches)
-}
 
 
-#' Accessory function for test_DITASIC that find the number of matches of names of cells 
-#' in a cluster that belong to conditionB
-detectcondB <- function(x) {
-  
-  condB_subjectnames <- paste("subject",condBindex)
-  matches <- sapply(condB_subjectnames,function(j) {sum(str_detect(x,j))})
-  
-  matches <- sum(matches)
-}
