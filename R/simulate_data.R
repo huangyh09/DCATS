@@ -9,7 +9,6 @@
 #' subjects drawn from a hypothetical condition B.
 #' @param replicates_number An integer signifying the number of subjects drawn from each condition
 #' @param subject_cellnumber An integer signifying the number of cells drawn from a subject 
-#' @param cluster_number An integer signifying the number of clusters to create 
 #' 
 #' @return a list containing \code{primary_count_matrix}, a large gene expression count matrix simulated from
 #' splatter, containing equal proportions of cells from different clusters; \code{subjects}, a list of

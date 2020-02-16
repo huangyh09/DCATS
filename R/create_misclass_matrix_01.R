@@ -28,16 +28,6 @@ create_misclass_matrix_01 <- function(bigM,clust) {
 }
 
 
-#' Accessory function to create_misclass_matrix_01 that creates representatives of a cluster 
-createRepresentatives <- function(trinarisedM, clust) {
-  
-  listObj <- lapply(seq_len(length(unique(clust))), function(i){trinarisedM[,clust==i-1]})
-  representatives <- lapply(listObj, function(x){apply(x,1,function(i){getmode(i)})})
-  
-  result <- list(listObj,representatives)
-}
-
-
 #' Accessory function to create_misclass_matrix_01 that produces the misclassification matrix
 misclassification_01 <- function(trinarisedM, clust) {
   
@@ -72,7 +62,16 @@ misclassification_01 <- function(trinarisedM, clust) {
   
   misclassM
 }
-#end 
+
+
+#' Accessory function to misclassification_01 that creates representatives of a cluster 
+createRepresentatives <- function(trinarisedM, clust) {
+  
+  listObj <- lapply(seq_len(length(unique(clust))), function(i){trinarisedM[,clust==i-1]})
+  representatives <- lapply(listObj, function(x){apply(x,1,function(i){getmode(i)})})
+  
+  result <- list(listObj,representatives)
+}
 
 
 #' Accessory function to create_misclass_matrix_01 that helps with trinarisation 
