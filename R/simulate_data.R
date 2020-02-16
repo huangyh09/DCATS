@@ -1,4 +1,4 @@
-# Function used to simulate data using splatter
+# Functions used to simulate data using splatter
 
 #' Main simulate data function 
 #' 
