@@ -93,7 +93,7 @@ test_DITASIC <- function(N, x, y, replicates_number, subject_cellnumber, misclas
     negative_result[i] <- sum(AR[,4] >= 0.05)
   }
   
-  list(positive_result,negative_result,AR)
+  list(positive_result,negative_result,AR,misclassM)
 }
 
 
