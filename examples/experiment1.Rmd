@@ -1,0 +1,102 @@
+---
+title: "Experiment1 Brief Results"
+author: "Hephaes"
+date: "2/16/2020"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+##Loading all required packages 
+The analysis requires the following packages. 
+```{r message=FALSE}
+library(DCATS)
+library(splatter)
+library(scater)
+library(Seurat)
+library(stringr)
+library(compositions)
+library(dplyr)
+library(MCMCpack)
+```
+
+
+## Settings of simulate_data.R
+simulate_data.R is the main function used for simulation. The function makes use of splatter. The number of clusters is free to be specified by the user. For the purpose of generating false positives, the parameter *de.prob* is set to low values for all clusters. *de.prob* specifies the probability that a gene selected is differentially expressed between the cluster and the rest of the cells. 
+
+*de.facScale* controls the variability of the cells in a cluster. It has been set to a high value 0.8. 
+
+
+## False positives detection 
+No false positives are detected using both identity matrix and the similarity matrix created by trinarisation. The first output below uses the similarity matrix constructed by trinarisation, which is being specified by the parameter create_misclass_matrix_01. 
+
+```{r}
+
+x <- rep(0.1,10)
+y <- rep(0.1,10)
+resultexp1 <- test_DITASIC(1,x,y,3,1000,create_misclass_matrix_01)
+resultexp1
+
+```
+
+The second output below uses an identity matrix (specified by create_misclass_matrix_00). Again no false positives are detected.
+
+```{r}
+
+x <- rep(0.1,10)
+y <- rep(0.1,10)
+resultexp0 <- test_DITASIC(1,x,y,3,1000,create_misclass_matrix_00)
+resultexp0
+
+```
+
+More examples are shown below. 
+
+```{r}
+
+x <- c(0.1,0.2,0.3,0.3,0.1)
+y <- c(0.1,0.2,0.3,0.3,0.1)
+result1 <- test_DITASIC(1,x,y,3,1000,create_misclass_matrix_01)
+result1
+
+```
+
+
+```{r}
+
+x <- c(0.1,0.2,0.3,0.3,0.1)
+y <- c(0.1,0.2,0.3,0.3,0.1)
+result0 <- test_DITASIC(1,x,y,3,1000,create_misclass_matrix_00)
+result0 
+
+```
+
+## Finding parameters that will return false positives
+### Cell type proportion 
+Since the above results unfortunately shows that both the similarity matrix and identity matrix will not produce false positives, it is of interest to find the parameters that will nonetheless evaluate to a false positive result. To find whether the cell type proportion will affect generation of false positives, a vector of proportion *x* is drawn from a Dirichlet distribution, and if there is such *x* that gives a false positive under test_DITASIC equipped with an identity matrix, it is reported in *matrix_result*. Number of such *x* is reported in *sum(parameters_results)*. 
+```{r}
+
+parameters_results <- rep(0,100)
+matrix_result <- rep(0,10)
+
+for (i in 1:100) {
+  x <- rdirichlet(1,c(1,1,1,1,1,1,1,1,1,1))
+  y <- x
+  test_result <- test_DITASIC(1,x,y,3,1000,create_misclass_matrix_00)
+  
+  if (test_result[[1]] > 0) {
+    parameters_results[[i]] <- 1 
+    rbind(matrix,x)
+  }
+}
+
+
+matrix_result 
+
+sum(parameters_results)
+
+```
+
+### de.prob 
+
