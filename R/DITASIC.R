@@ -103,7 +103,6 @@ create.empdist <- function(abundance_objects, norm.fac=1) {
   empdist <- lapply(lambdas, function(i){as.vector(sapply(i, function(lambd) {
     rpois(N.poi, lambd) }))})
 
-
   # All taxa data: 'empdist.all' list object (0 = not ex. Taxa, 50000 poisson
   # draws for existent taxa)
   empdist.all <- sapply(names(abs.coeff), function(x) NULL)
