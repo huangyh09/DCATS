@@ -1,5 +1,7 @@
 # Function used to simulate data using splatter
 
+#' Main simulate data function 
+#' 
 #' @param x A vector of proportions signifying the desired proportions of cell types for
 #' subjects drawn from a hypothetical condition A. The number of clusters created by the function 
 #' is equal to the length of x
