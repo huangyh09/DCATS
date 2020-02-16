@@ -53,7 +53,7 @@ misclassification_01 <- function(trinarisedM, clust) {
   for (i in 1:howlong) {
     for (j in 1:howlong) {
       J <- representatives[[i]] != representatives[[j]]
-      if (sum(J) ==0){
+      if (sum(J) ==0) {
         misclassM[i,j] <- dim(clusters[[i]])[2]
       }
       else {
