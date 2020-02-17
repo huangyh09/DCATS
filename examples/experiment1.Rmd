@@ -98,5 +98,126 @@ sum(parameters_results)
 
 ```
 
-### de.prob 
+## Drawing some insignts of analyses from scDC
+### Simple analysis of cell type proportion estimates deviation 
+In this analysis, we consider four clusters and see how the estimates produced by DITASIC deviate from the cell type proportion initially input. 
+
+In the analysis, we first specify the parameters and run DITASIC on simulated dataset. The result output by DITASIC is then subsetted to leave only the cell count estimates. The percentage deviation from the input is then calculated:
+
+In the first example below, there are 5 subjects in each condition. And each subject has 500 cells. 
+```{r}
+
+set.seed(777)
+x <- c(0.1,0.2,0.3,0.4)
+y <- c(0.1,0.2,0.3,0.4)
+scdcresult1 <- test_DITASIC(1,x,y,5,500,create_misclass_matrix_01)
+scdcresult1C <- test_DITASIC(1,x,y,5,500,create_misclass_matrix_00)
+scdcprop1 <- (sort(scdcresult1[[3]][,1]/sum(scdcresult1[[3]][,1]))-c(0.1,0.2,0.3,0.4))/c(0.1,0.2,0.3,0.4)*100
+scdcprop1C <- (sort(scdcresult1C[[3]][,1]/sum(scdcresult1C[[3]][,1]))-c(0.1,0.2,0.3,0.4))/c(0.1,0.2,0.3,0.4)*100
+
+cbind(sort(scdcresult1[[3]][,1]),sort(scdcresult1C[[3]][,1]))
+cbind(scdcprop1,scdcprop1C)
+
+#This step shows the differences in p-values 
+cbind(scdcresult1[[3]][,4],scdcresult1C[[3]][,4])
+
+```
+
+In the second example, there are 25 subjects in each condition, and each subject has 100 cells 
+```{r}
+
+set.seed(777)
+x <- c(0.1,0.2,0.3,0.4)
+y <- c(0.1,0.2,0.3,0.4)
+scdcresult2 <- test_DITASIC(1,x,y,25,100,create_misclass_matrix_01)
+scdcresult2C <- test_DITASIC(1,x,y,25,100,create_misclass_matrix_00)
+scdcprop2 <- (sort(scdcresult2[[3]][,1]/sum(scdcresult2[[3]][,1]))-c(0.1,0.2,0.3,0.4))/c(0.1,0.2,0.3,0.4)*100
+scdcprop2C <- (sort(scdcresult2C[[3]][,1]/sum(scdcresult2C[[3]][,1]))-c(0.1,0.2,0.3,0.4))/c(0.1,0.2,0.3,0.4)*100
+
+cbind(sort(scdcresult2[[3]][,1]),sort(scdcresult2C[[3]][,1]))
+cbind(scdcprop2,scdcprop2C)
+cbind(scdcresult2[[3]][,4],scdcresult2C[[3]][,4])
+
+```
+
+In the third example, there are 50 subjects in each condition, and each subject has 50 cells
+```{r}
+
+set.seed(777)
+x <- c(0.1,0.2,0.3,0.4)
+y <- c(0.1,0.2,0.3,0.4)
+scdcresult3 <- test_DITASIC(1,x,y,50,50,create_misclass_matrix_01)
+scdcresult3C <- test_DITASIC(1,x,y,50,50,create_misclass_matrix_00)
+scdcprop3 <- (sort(scdcresult3[[3]][,1]/sum(scdcresult3[[3]][,1]))-c(0.1,0.2,0.3,0.4))/c(0.1,0.2,0.3,0.4)*100
+scdcprop3C <- (sort(scdcresult3C[[3]][,1]/sum(scdcresult3C[[3]][,1]))-c(0.1,0.2,0.3,0.4))/c(0.1,0.2,0.3,0.4)*100
+
+cbind(sort(scdcresult3[[3]][,1]),sort(scdcresult3C[[3]][,1]))
+cbind(scdcprop3,scdcprop3C)
+cbind(scdcresult3[[3]][,4],scdcresult3C[[3]][,4])
+
+```
+
+In the last example, there are 25 subjects in each condition and each subject has 100 cells. 
+
+```{r}
+
+set.seed(777)
+x <- c(0.05,0.25,0.3,0.4)
+y <- c(0.05,0.25,0.3,0.4)
+scdcresult4 <- test_DITASIC(1,x,y,25,100,create_misclass_matrix_01)
+scdcresult4C <- test_DITASIC(1,x,y,25,100,create_misclass_matrix_00)
+scdcprop4 <- (sort(scdcresult4[[3]][,1]/sum(scdcresult4[[3]][,1]))-c(0.05,0.25,0.3,0.4))/c(0.05,0.25,0.3,0.4)*100
+scdcprop4C <- (sort(scdcresult4C[[3]][,1]/sum(scdcresult4C[[3]][,1]))-c(0.05,0.25,0.3,0.4))/c(0.05,0.25,0.3,0.4)*100
+
+cbind(sort(scdcresult4[[3]][,1]),sort(scdcresult4C[[3]][,1]))
+cbind(scdcprop4,scdcprop4C)
+cbind(scdcresult4[[3]][,4],scdcresult4C[[3]][,4])
+
+```
+
+Some comments on the results above: when each subject has smaller number of cells, the deviation of the cell type proportion is more serious. The similarity matrix 01 seems to decrease the p-value. 
+
+### Whether the algorithm can identity cell types showing differential proportion 
+
+Although the behaviours of the algorithms are quite pathological in terms of false positives generation, both algorithms succeed in identifying cell types showing differential proportion, even when there exists cell type that is very small: 
+
+```{r}
+
+set.seed(777)
+x <- c(0.7,0.26,0.04)
+y <- c(0.6,0.36,0.04)
+scdcresult5 <- test_DITASIC(1,x,y,25,100,create_misclass_matrix_01)
+scdcresult5C <- test_DITASIC(1,x,y,25,100,create_misclass_matrix_00)
+scdcprop5 <- (sort(scdcresult5[[3]][,1]/sum(scdcresult5[[3]][,1]))-c(0.04,0.26,0.7))/c(0.04,0.26,0.7)*100
+scdcprop5C <- (sort(scdcresult5C[[3]][,1]/sum(scdcresult5C[[3]][,1]))-c(0.04,0.26,0.7))/c(0.04,0.26,0.7)*100
+
+cbind(sort(scdcresult5[[3]][,1]),sort(scdcresult5C[[3]][,1]))
+cbind(scdcprop5,scdcprop5C)
+cbind(scdcresult5[[3]][,4],scdcresult5C[[3]][,4])
+
+```
+
+There are situations where similarity matrix 01 will produce a false negative:
+
+```{r}
+
+set.seed(777)
+x <- c(0.7,0.26,0.04)
+y <- c(0.6,0.38,0.02)
+scdcresult6 <- test_DITASIC(1,x,y,25,100,create_misclass_matrix_01)
+scdcresult6C <- test_DITASIC(1,x,y,25,100,create_misclass_matrix_00)
+scdcprop6 <- (sort(scdcresult6[[3]][,1]/sum(scdcresult6[[3]][,1]))-c(0.04,0.26,0.7))/c(0.04,0.26,0.7)*100
+scdcprop6C <- (sort(scdcresult5C[[3]][,1]/sum(scdcresult6C[[3]][,1]))-c(0.04,0.26,0.7))/c(0.04,0.26,0.7)*100
+
+cbind(sort(scdcresult6[[3]][,1]),sort(scdcresult6C[[3]][,1]))
+cbind(scdcprop6,scdcprop6C)
+cbind(scdcresult6[[3]][,4],scdcresult6C[[3]][,4])
+
+```
+
+## Real Data
+In this analysis we use the data set from Farbehi et al 2019 study: https://elifesciences.org/articles/43882. 
+
+```{r echo=TRUE, eval=FALSE}
+GFP_ShamVsMI_days3_7 <- read.delim("~/working_directory/GFP_ShamVsMI_days3_7.txt")
 
