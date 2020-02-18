@@ -1,0 +1,60 @@
+---
+title: "Simple example for composition alaysis"
+output:
+  html_document:
+    df_print: paged
+---
+
+This is a simple example for showing that similarity matrix is informative for
+composition analysis. It will be a general case, instead of scRNA-seq specific, 
+hence only based on clustering composition counts, instead of raw gene 
+expressiong count matrix.
+
+```{r}
+set.seed(1)
+```
+
+
+```{r}
+library(DCATS)
+
+K <- 2
+total_samples1 = c(100, 800, 1300, 600)
+total_samples2 = c(250, 700, 1100) 
+dirichlet_s1 = rep(1, K) * 20
+dirichlet_s2 = rep(1, K) * 20
+confuse_rate = 0.2
+confuse_mat = diag(K) * (1 - confuse_rate) + confuse_rate * (1 - diag(K)) / 3
+
+sim_dat <- DCATS::simulator_base(total_samples1, total_samples2, 
+                                 dirichlet_s1, dirichlet_s2, confuse_mat)
+sim_dat
+```
+
+```{r}
+prop1 <- sim_dat[[1]] / rowSums(sim_dat[[1]])
+prop2 <- sim_dat[[2]] / rowSums(sim_dat[[2]])
+pval_t <- rep(0, K)
+for (i in seq(K)) {
+    pval_t[i] <- t.test(prop1[, i], prop2[, i])$p.value
+}
+pval_t
+```
+```{r}
+fisher.test(rbind(sim_dat[[1]][1, ], sim_dat[[2]][1, ]))$p.value
+```
+
+```{r}
+# plot(cars)
+DCATS::dcats_fit(sim_dat[[1]][1, , drop = FALSE], 
+                 sim_dat[[2]][1, , drop = FALSE], 
+                 similarity_mat = NULL, n_samples = 1)
+```
+
+
+```{r}
+dcats_fit(sim_dat[[1]], sim_dat[[2]], n_samples = 1)
+dcats_fit(sim_dat[[1]], sim_dat[[2]], diag(2), n_samples = 5)
+dcats_fit(sim_dat[[1]], sim_dat[[2]], confuse_mat, n_samples = 100)
+```
+

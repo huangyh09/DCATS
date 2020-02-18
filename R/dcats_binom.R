@@ -1,0 +1,88 @@
+
+#' A binomial regression test with similarity based bootstrapping
+#'
+#' A GLM test with binomial distribution. In order to estimate the variance of
+#' the weight, a boostrapping based on the composition similarity is performed.
+#'
+#' @param counts1 A matrix of compsition sizes (n_rep1, n_cluster) for each
+#' replicate in each cluster for codition 1
+#' @param counts2 A matrix of compsition sizes (n_rep2, n_cluster) for each
+#' replicate in each cluster for codition 2
+#' @param similarity_mat A matrix of floats (n_cluster, n_cluster) for the
+#' similarity matrix between cluster group pair
+#'
+#' @return a vector of significance p values for each cluster
+#'
+#' @export
+#' @import matrixStats
+#'
+#' @examples
+#' K <- 2
+#' totals1 = c(100, 800, 1300, 600)
+#' totals2 = c(250, 700, 1100)
+#' diri_s1 = rep(1, K) * 20
+#' diri_s2 = rep(1, K) * 20
+#' confuse_rate = 0.2
+#' simil_mat = diag(K) * (1 - confuse_rate) + confuse_rate * (1 - diag(K)) / 3
+#' sim_dat <- DCATS::simulator_base(totals1, totals2, diri_s1, diri_s2, simil_mat)
+#' dcats_fit(sim_dat[[1]], sim_dat[[2]], confuse_mat, n_samples = 100)
+#'
+dcats_fit <- function(counts1, counts2, similarity_mat=NULL, n_samples=50) {
+    K <- ncol(counts1)
+
+    if (!is.null(n_samples) && !is.null(similarity_mat)) {
+        counts1_use <- matrix(0, nrow(counts1) * n_samples, K)
+        counts2_use <- matrix(0, nrow(counts2) * n_samples, K)
+        for (i in seq_len(nrow(counts1))) {
+            idx <- seq((i - 1) * n_samples + 1, i * n_samples)
+            for (j in seq_len(K)) {
+                counts1_use[idx, ] <- (counts1_use[idx, ] +
+                                           t(rmultinom(n_samples, counts1[i, j],
+                                                       similarity_mat[j, ])))
+            }
+        }
+        for (i in seq_len(nrow(counts2))) {
+            idx <- seq((i - 1) * n_samples + 1, i * n_samples)
+            for (j in seq_len(K)) {
+                counts2_use[idx, ] <- (counts2_use[idx, ] +
+                                           t(rmultinom(n_samples, counts2[i, j],
+                                                       similarity_mat[j, ])))
+            }
+        }
+    } else{
+        counts1_use <- counts1
+        counts2_use <- counts2
+    }
+
+    ## Binomial regression for each sampling
+    coeffs_val <- matrix(NA, n_samples, K)
+    coeffs_err <- matrix(NA, n_samples, K)
+    total_all <- c(rowSums(counts1_use), rowSums(counts2_use))
+    label_all <- c(rep(1, nrow(counts1_use)), rep(0, nrow(counts2_use)))
+    for (ir in seq_len(n_samples)) {
+        idx <- seq(1, length(total_all), n_samples) + ir - 1
+        for (i in seq_len(K)) {
+            n1 <- c(counts1_use[, i], counts2_use[, i])[idx]
+            df <- data.frame(n1 = n1, n2 = total_all[idx] - n1,
+                             label = label_all[idx])
+
+            model1 <- glm(cbind(n1, n2) ~ label, family = binomial(), data = df)
+            coeffs_val[ir, i] <- summary(model1)$coefficients[2, 1]
+            coeffs_err[ir, i] <- summary(model1)$coefficients[2, 2]
+        }
+    }
+
+    ## Averaging the coeffcients errors
+    if (is.null(n_samples) || is.null(similarity_mat) || n_samples == 1) {
+        coeff_val_mean <- colMeans(coeffs_val)
+        coeff_err_pool <- colMeans(coeffs_err**2)
+    } else{
+        coeff_val_mean <- colMeans(coeffs_val)
+        coeff_err_pool <- colMeans(coeffs_err**2) +
+            matrixStats::colSds(coeffs_val) +
+            matrixStats::colSds(coeffs_val) / n_samples
+    }
+
+    pvals <- pnorm(-abs(coeff_val_mean) / sqrt(coeff_err_pool))  * 2
+    pvals
+}
