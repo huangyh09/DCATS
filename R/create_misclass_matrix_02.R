@@ -27,7 +27,7 @@ create_misclass_matrix_02 <- function(bigM, clust) {
   for (i in 1:iterations) {
     
     # bootstrap the starting matrix and apply kmeans clustering 
-    bootstrappedM <- bigM[,sample(ncol(bigM),1000)]
+    bootstrappedM <- bigM[,sample(1:ncol(bigM),1000)]
     scee <- SingleCellExperiment(assays=list(counts=bootstrappedM))
     scee <- logNormCounts(scee)
     kout <- kmeans((t(logcounts(scee))), centers = cluster_number)
