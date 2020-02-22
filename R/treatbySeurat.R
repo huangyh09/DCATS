@@ -9,7 +9,7 @@
 treatbySeurat <- function(tip.data) {
   
   # all preprocessing steps modelled from 
-  tip.aggr <- CreateSeuratObject(tip.data, min.cells = 10, min.features =  = 200, project = "TIP aggregate")
+  tip.aggr <- CreateSeuratObject(tip.data, min.cells = 10, min.features = 200, project = "TIP aggregate")
   mito.genes <- grep("^mt-", rownames(tip.aggr@data), value = TRUE)
   percent.mito <- Matrix::colSums(tip.aggr@raw.data[mito.genes, ])/Matrix::colSums(tip.aggr@raw.data)
   tip.aggr <- AddMetaData(tip.aggr, percent.mito, "percent.mito")
