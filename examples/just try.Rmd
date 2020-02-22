@@ -1,0 +1,33 @@
+---
+title: "Farbehi"
+output: html_document
+---
+
+## Loading all required packages 
+The analysis requires the following packages. 
+```{r setup,echo=TRUE, message = FALSE, eval=FALSE}
+library(DCATS)
+library(vroom)
+library(splatter)
+library(scater)
+library(Seurat)
+library(stringr)
+library(compositions)
+library(dplyr)
+library(MCMCpack)
+```
+
+## Loading the data set
+We use vroom to load the large gene-cell count matrix which is the starting point of our analysis. 
+```{r import, echo=TRUE, eval=FALSE}
+primary_data <- vroom("TIP_ShamVsMI_days3_7.txt")
+bigM <- as.data.frame(primary_data)
+```
+
+## Treat Seurat to the data and return seurat object 
+The following step makes use treatbySeurat in DCATS to return the normalised and filtered matrix, and the associated Seurat object:
+```{r treat_seurat, echo=TRUE, eval=FALSE}
+bigM <- treatbySeurat(bigM)
+```
+
+
