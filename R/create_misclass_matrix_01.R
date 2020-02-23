@@ -10,7 +10,7 @@ create_misclass_matrix_01 <- function(bigM,clust) {
   
   #filtering bigM for the genes that are larger than the first quantiles 
   getVar <- apply(bigM, 1, var)
-  bigM <- bigM[getVar >= quantile(getVar)[2], ]
+  bigM <- bigM[getVar >= quantile(getVar)[4], ]
   bigM <- apply(bigM, 1, function(i){log(i/sum(i)*10000)})
   bigM <- t(bigM)
   
