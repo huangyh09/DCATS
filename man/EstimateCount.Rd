@@ -4,8 +4,13 @@
 \alias{EstimateCount}
 \title{Estimate count function adapted from DiTaSIC}
 \usage{
-EstimateCount(mat, observedCounts, filtering = FALSE,
-  pvalThreshold = 0.05, minThreshold = 0)
+EstimateCount(
+  mat,
+  observedCounts,
+  filtering = FALSE,
+  pvalThreshold = 0.05,
+  minThreshold = 0
+)
 }
 \arguments{
 \item{mat}{A matrix of floats (n_group, n_group) for similarity matrix

@@ -4,8 +4,14 @@
 \alias{DiffExpr}
 \title{Differential abundance analysis main function adapted from DiTASIC}
 \usage{
-DiffExpr(empdist1, empdist2, norm.coeff_s1, norm.coeff_s2,
-  threshold.minreads = 0, seed = 1448)
+DiffExpr(
+  empdist1,
+  empdist2,
+  norm.coeff_s1,
+  norm.coeff_s2,
+  threshold.minreads = 0,
+  seed = 1448
+)
 }
 \description{
 Differential abundance analysis main function adapted from DiTASIC
