@@ -2,7 +2,7 @@ Package: DCATS
 Type: Package
 Title: Differential composition analysis tweaked with similarity in scRNA-seq 
     data
-Version: 0.1.0
+Version: 0.1.1
 Author: Hephaes Chuen Chau, Yuanhua Huang, Joshua Ho
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: Methods to detect the differential composition abundances between 

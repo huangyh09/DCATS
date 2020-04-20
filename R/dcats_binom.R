@@ -1,4 +1,21 @@
 
+#' Generate similarity matrix with uniform confusion rate to none-self clusters
+#'
+#' @param K A integer for number of cluster
+#' @param confuse_rate A float for confusion rate, uniformly to none-self
+#' clusters
+#'
+#' @return a similarity matrix with uniform confusion with other cluster
+#'
+#' @export
+#'
+#' @examples
+#' get_similarity_mat(4, 0.1)
+get_similarity_mat <- function(K, confuse_rate) {
+    diag(K) * (1 - confuse_rate) + confuse_rate * (1 - diag(K)) / (K - 1)
+}
+
+
 #' A binomial regression test with similarity based bootstrapping
 #'
 #' A GLM test with binomial distribution. In order to estimate the variance of
@@ -22,13 +39,41 @@
 #' totals2 = c(250, 700, 1100)
 #' diri_s1 = rep(1, K) * 20
 #' diri_s2 = rep(1, K) * 20
-#' confuse_rate = 0.2
-#' simil_mat = diag(K) * (1 - confuse_rate) + confuse_rate * (1 - diag(K)) / 3
+#' simil_mat = get_similarity_mat(K, confuse_rate=0.2)
 #' sim_dat <- DCATS::simulator_base(totals1, totals2, diri_s1, diri_s2, simil_mat)
 #' dcats_fit(sim_dat[[1]], sim_dat[[2]], confuse_mat, n_samples = 100)
 #'
-dcats_fit <- function(counts1, counts2, similarity_mat=NULL, n_samples=50) {
+dcats_fit <- function(counts1, counts2, similarity_mat=NULL, n_samples=50,
+                      pseudo_count=NULL) {
+    ## Check counts1 and counts2 shape
+    if (length(counts1) == 1 || is.null(dim(counts1)) || length(dim(counts1)) < 2) {
+        counts1 = matrix(counts1, nrow=1)
+    }
+    if (length(counts2) == 1 || is.null(dim(counts2)) || length(dim(counts2)) < 2) {
+        counts2 = matrix(counts2, nrow=1)
+    }
+
+    ## add base pseudo count if zero cells for all replicate
+    if (is.null(pseudo_count)) {
+        if (any(colMeans(counts1) == 0) || any(colMeans(counts2) == 0) ) {
+            print(paste("Empty cell type exists in at least one conidtion;",
+                        "adding replicate & condition specific pseudo count:"))
+            print(0.01 * rowMeans(counts1))
+            print(0.01 * rowMeans(counts2))
+
+            counts1 = counts1 + 0.01 * rowMeans(counts1)
+            counts2 = counts2 + 0.01 * rowMeans(counts2)
+        }
+    } else {
+        counts1 = counts1 + pseudo_count
+        counts2 = counts2 + pseudo_count
+    }
+
+    ## number of cell types
     K <- ncol(counts1)
+    if (is.null(similarity_mat)) {
+        n_samples <- 1
+    }
 
     if (!is.null(n_samples) && !is.null(similarity_mat)) {
         counts1_use <- matrix(0, nrow(counts1) * n_samples, K)
@@ -84,5 +129,11 @@ dcats_fit <- function(counts1, counts2, similarity_mat=NULL, n_samples=50) {
     }
 
     pvals <- pnorm(-abs(coeff_val_mean) / sqrt(coeff_err_pool))  * 2
-    pvals
+
+    data.frame(
+        "coeff_mean"=coeff_val_mean,
+        "coeff_std"=sqrt(coeff_err_pool),
+        "pvals"=pvals, row.names = colnames(counts1))
 }
+
+

@@ -13,7 +13,7 @@ mtx_to_df <- function(X) {
     }
     data.frame(Var1 = rep(row.names(X), ncol(X)),
                Var2 = rep(colnames(X), each = nrow(X)),
-               value = c(X))
+               value = c(as.matrix(X)))
 }
 
 
@@ -25,7 +25,7 @@ mtx_to_df <- function(X) {
 #' @param show_value Logical value for showing the value for each element or not
 #' @import ggplot2
 #' @export
-heat_matrix <- function(mat, base_size=12, digits=2, show_value=FALSE){
+heat_matrix <- function(mat, base_size=12, digits=2, show_value=TRUE){
     df <- mtx_to_df(mat)
     if (!is.null(rownames(mat))) {
         df$Var1 <- factor(df$Var1, rownames(mat))
