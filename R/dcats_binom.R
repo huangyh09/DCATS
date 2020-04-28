@@ -68,6 +68,8 @@ dcats_fit <- function(counts1, counts2, similarity_mat=NULL, n_samples=50,
         counts1 = counts1 + pseudo_count
         counts2 = counts2 + pseudo_count
     }
+    prop1 <- counts1 / rowSums(counts1)
+    prop2 <- counts2 / rowSums(counts2)
 
     ## number of cell types
     K <- ncol(counts1)
@@ -111,7 +113,8 @@ dcats_fit <- function(counts1, counts2, similarity_mat=NULL, n_samples=50,
             df <- data.frame(n1 = n1, n2 = total_all[idx] - n1,
                              label = label_all[idx])
 
-            model1 <- glm(cbind(n1, n2) ~ label, family = binomial(), data = df)
+            model1 <- glm(cbind(n1, n2) ~ label + 1,
+                          family = binomial(), data = df)
             coeffs_val[ir, i] <- summary(model1)$coefficients[2, 1]
             coeffs_err[ir, i] <- summary(model1)$coefficients[2, 2]
         }
@@ -130,10 +133,23 @@ dcats_fit <- function(counts1, counts2, similarity_mat=NULL, n_samples=50,
 
     pvals <- pnorm(-abs(coeff_val_mean) / sqrt(coeff_err_pool))  * 2
 
+    # variance of two independent random variables:
+    # Taylor expansion: http://www.stat.cmu.edu/~hseltman/files/ratio.pdf
+    # Note, the variance is devided by n_replicates so it's the variance on mean
+    fold_var <- (colMeans(prop1)^2 / colMeans(prop2)^2 *
+            (matrixStats::colSds(prop1)^2 / colMeans(prop1)^2 / nrow(counts1) +
+             matrixStats::colSds(prop2)^2 / colMeans(prop2)^2) / nrow(counts2))
+
     data.frame(
-        "coeff_mean"=coeff_val_mean,
-        "coeff_std"=sqrt(coeff_err_pool),
-        "pvals"=pvals, row.names = colnames(counts1))
+        "prop1_mean" = colMeans(prop1),
+        "prop1_std"  = matrixStats::colSds(prop1),
+        "prop2_mean" = colMeans(prop2),
+        "prop2_std"  = matrixStats::colSds(prop2),
+        "fold_mean"  = colMeans(prop1) / colMeans(prop2),
+        "fold_std"   = sqrt(fold_var),
+        "coeff_mean" = coeff_val_mean,
+        "coeff_std"  = sqrt(coeff_err_pool),
+        "pvals" = pvals, row.names = colnames(counts1))
 }
 
 
