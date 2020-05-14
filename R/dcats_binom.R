@@ -22,11 +22,16 @@ get_similarity_mat <- function(K, confuse_rate) {
 #' the weight, a boostrapping based on the composition similarity is performed.
 #'
 #' @param counts1 A matrix of compsition sizes (n_rep1, n_cluster) for each
-#' replicate in each cluster for codition 1
+#' replicate in each cluster for codition 1 as case
 #' @param counts2 A matrix of compsition sizes (n_rep2, n_cluster) for each
-#' replicate in each cluster for codition 2
+#' replicate in each cluster for codition 2 as control
 #' @param similarity_mat A matrix of floats (n_cluster, n_cluster) for the
 #' similarity matrix between cluster group pair
+#' @param pseudo_count A pseudo count to add for counts in all cell types.
+#' Default NULL means 0 except if a cell type is emplty in one condition,
+#' otherwise pseudo_count will be: 0.01 * rowMeans for each condition
+#' @param n_samples An integer for number samples in sampling for estimating the
+#' variance of the weights
 #'
 #' @return a vector of significance p values for each cluster
 #'
@@ -46,10 +51,12 @@ get_similarity_mat <- function(K, confuse_rate) {
 dcats_fit <- function(counts1, counts2, similarity_mat=NULL, n_samples=50,
                       pseudo_count=NULL) {
     ## Check counts1 and counts2 shape
-    if (length(counts1) == 1 || is.null(dim(counts1)) || length(dim(counts1)) < 2) {
+    if (length(counts1) == 1 || is.null(dim(counts1)) ||
+        length(dim(counts1)) < 2) {
         counts1 = matrix(counts1, nrow=1)
     }
-    if (length(counts2) == 1 || is.null(dim(counts2)) || length(dim(counts2)) < 2) {
+    if (length(counts2) == 1 || is.null(dim(counts2)) ||
+        length(dim(counts2)) < 2) {
         counts2 = matrix(counts2, nrow=1)
     }
 
@@ -104,6 +111,8 @@ dcats_fit <- function(counts1, counts2, similarity_mat=NULL, n_samples=50,
     ## Binomial regression for each sampling
     coeffs_val <- matrix(NA, n_samples, K)
     coeffs_err <- matrix(NA, n_samples, K)
+    intercept_val <- matrix(NA, n_samples, K)
+    intercept_err <- matrix(NA, n_samples, K)
     total_all <- c(rowSums(counts1_use), rowSums(counts2_use))
     label_all <- c(rep(1, nrow(counts1_use)), rep(0, nrow(counts2_use)))
     for (ir in seq_len(n_samples)) {
@@ -117,6 +126,8 @@ dcats_fit <- function(counts1, counts2, similarity_mat=NULL, n_samples=50,
                           family = binomial(), data = df)
             coeffs_val[ir, i] <- summary(model1)$coefficients[2, 1]
             coeffs_err[ir, i] <- summary(model1)$coefficients[2, 2]
+            intercept_val[ir, i] <- summary(model1)$coefficients[1, 1]
+            intercept_err[ir, i] <- summary(model1)$coefficients[1, 2]
         }
     }
 
@@ -124,11 +135,18 @@ dcats_fit <- function(counts1, counts2, similarity_mat=NULL, n_samples=50,
     if (is.null(n_samples) || is.null(similarity_mat) || n_samples == 1) {
         coeff_val_mean <- colMeans(coeffs_val)
         coeff_err_pool <- colMeans(coeffs_err**2)
+        intercept_val_mean <- colMeans(intercept_val)
+        intercept_err_pool <- colMeans(intercept_err**2)
     } else{
         coeff_val_mean <- colMeans(coeffs_val)
         coeff_err_pool <- colMeans(coeffs_err**2) +
             matrixStats::colSds(coeffs_val) +
             matrixStats::colSds(coeffs_val) / n_samples
+
+        intercept_val_mean <- colMeans(intercept_val)
+        intercept_err_pool <- colMeans(intercept_err**2) +
+            matrixStats::colSds(intercept_val) +
+            matrixStats::colSds(intercept_val) / n_samples
     }
 
     pvals <- pnorm(-abs(coeff_val_mean) / sqrt(coeff_err_pool))  * 2
@@ -136,20 +154,23 @@ dcats_fit <- function(counts1, counts2, similarity_mat=NULL, n_samples=50,
     # variance of two independent random variables:
     # Taylor expansion: http://www.stat.cmu.edu/~hseltman/files/ratio.pdf
     # Note, the variance is devided by n_replicates so it's the variance on mean
-    fold_var <- (colMeans(prop1)^2 / colMeans(prop2)^2 *
-            (matrixStats::colSds(prop1)^2 / colMeans(prop1)^2 / nrow(counts1) +
-             matrixStats::colSds(prop2)^2 / colMeans(prop2)^2) / nrow(counts2))
+    # fold_var <- (colMeans(prop1)^2 / colMeans(prop2)^2 *
+    #         (matrixStats::colSds(prop1)^2 / colMeans(prop1)^2 / nrow(counts1) +
+    #          matrixStats::colSds(prop2)^2 / colMeans(prop2)^2) / nrow(counts2))
+    # fold_mean = colMeans(prop1) / colMeans(prop2)
 
     data.frame(
         "prop1_mean" = colMeans(prop1),
         "prop1_std"  = matrixStats::colSds(prop1),
         "prop2_mean" = colMeans(prop2),
         "prop2_std"  = matrixStats::colSds(prop2),
-        "fold_mean"  = colMeans(prop1) / colMeans(prop2),
-        "fold_std"   = sqrt(fold_var),
         "coeff_mean" = coeff_val_mean,
         "coeff_std"  = sqrt(coeff_err_pool),
-        "pvals" = pvals, row.names = colnames(counts1))
+        "intecept_mean" = intercept_val_mean,
+        "intecept_std"  = sqrt(intercept_err_pool),
+        "pvals" = pvals,
+        row.names = colnames(counts1)
+    )
 }
 
 
