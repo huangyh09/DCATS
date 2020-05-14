@@ -57,33 +57,37 @@ heat_matrix <- function(mat, base_size=12, digits=2, show_value=TRUE){
 }
 
 
-#' Vocalo plot differential abundance
+#' Vocalo plot differential abundance test on effect size and p values
+#' @param res_df, data.frame as output from `dcats_fit()` or `betabinLRT()` with
+#' variables `pvals`, `rownames`, `prop2_mean`, `coeff_mean`, and `coeff_std`
+#' @param min_pval, A float to cape the minimum of p values
+#' @param min_prop, A float to cape the minimum of cell type proportion in
+#' control
+#' @param show_EffectStd, A bool for indicating if showing the standard error of
+#' effect size
+#'
+#' @import ggrepel, ggplot2
 #' @export
 #'
-volcano_plot <- function(dcats_res, min_pval=10^(-10), show_fold_std=TRUE,
-                         breaks=c(0.001, 0.003, 0.01, 0.03, 0.1, 0.3),
-                         min_prop=3*10^(-4)) {
-    df_plot <- data.frame("FoldChange"=dcats_res$fold_mean,
-                          "FoldStd"=dcats_res$fold_std,
-                          "pvals"=dcats_res$pvals,
-                          "PropCond1"= dcats_res$prop1_mean,
-                          row.names = rownames(dcats_res))
+volcano_plot <- function(df_plot, min_pval=10^(-10), min_prop=3*10^(-4),
+                         show_EffectStd=TRUE) {
+    df_plot["cellType"] <- factor(rownames(df_plot))
     df_plot$pvals[df_plot$pvals < min_pval] = min_pval
-    df_plot$Fraction1[df_plot$Fraction1 < min_prop] = min_prop
+    df_plot$prop2_mean[df_plot$prop2_mean < min_prop] = min_prop
 
-    pp <- ggplot(df_plot, aes(x = log2(FoldChange), y = -log10(pvals),
-                              color = PropCond1)) +
-        geom_point(size=3.5) +
-
+    pp <- ggplot(df_plot, aes(x = coeff_mean, y = -log10(pvals),
+                              color=cellType)) +
+        geom_point(aes(color = cellType, size= prop2_mean)) +
         geom_hline(yintercept=-log10(0.05), color="firebrick") +
         geom_vline(xintercept=0) +
         ggrepel::geom_text_repel(aes(label = row.names(df_plot))) +
-        viridis::scale_color_viridis(trans = "log2", breaks=breaks) +
-        theme_bw()
-    if (show_fold_std) {
-        pp <- pp + geom_pointrange(aes(xmin=log2(FoldChange - FoldStd),
-                                       xmax=log2(FoldChange + FoldStd)))
+        guides(color=FALSE) + theme_bw() +
+        labs(x="Effect size", size="Prop_ctrl")
+    if (show_EffectStd) {
+        pp <- pp + geom_pointrange(aes(xmin=coeff_mean - coeff_std,
+                                       xmax=coeff_mean + coeff_std))
     }
+
     pp
 }
 
