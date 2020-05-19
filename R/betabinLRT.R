@@ -47,8 +47,10 @@ betabinLRT <- function(counts1, counts2, pseudo_count=NULL, binom_only=FALSE) {
             print(0.01 * rowMeans(counts1))
             print(0.01 * rowMeans(counts2))
 
-            counts1 = counts1 + 0.01 * rowMeans(counts1)
-            counts2 = counts2 + 0.01 * rowMeans(counts2)
+            # counts1 = counts1 + 0.01 * rowMeans(counts1)
+            # counts2 = counts2 + 0.01 * rowMeans(counts2)
+            counts1 = counts1 + 1
+            counts2 = counts2 + 1
         }
     } else {
         counts1 = counts1 + pseudo_count
@@ -61,7 +63,7 @@ betabinLRT <- function(counts1, counts2, pseudo_count=NULL, binom_only=FALSE) {
     K <- ncol(counts1)
 
     ## Binomial regression for each sampling
-    intercept <- rep(NA, K)
+    intercept_val <- rep(NA, K)
     intercept_err <- rep(NA, K)
 
     coeffs_val <- rep(NA, K)
@@ -78,10 +80,10 @@ betabinLRT <- function(counts1, counts2, pseudo_count=NULL, binom_only=FALSE) {
             df_tmp <- data.frame(n1 = n1, n2 = totals - n1, label=labels)
             model0 <- glm(cbind(n1, n2) ~ 1, family = binomial(),
                           data = df_tmp)
-            model1 <- glm(cbind(n1, n2) ~ labels + 1, family = binomial(),
+            model1 <- glm(cbind(n1, n2) ~ label + 1, family = binomial(),
                           data = df_tmp)
 
-            intercept[i] <- summary(model1)$coefficients[1, 1]
+            intercept_val[i] <- summary(model1)$coefficients[1, 1]
             intercept_err[i] <- summary(model1)$coefficients[1, 2]
 
             coeffs_val[i] <- summary(model1)$coefficients[2, 1]
@@ -97,9 +99,9 @@ betabinLRT <- function(counts1, counts2, pseudo_count=NULL, binom_only=FALSE) {
             df_tmp <- data.frame(n1 = n1, n2 = totals - n1, label=labels)
 
             fm0 <- aod::betabin(cbind(n1, n2) ~ 1, ~ 1, data = df_tmp)
-            fm1 <- aod::betabin(cbind(n1, n2) ~ labels, ~ 1, data = df_tmp)
+            fm1 <- aod::betabin(cbind(n1, n2) ~ label, ~ 1, data = df_tmp)
 
-            intercept[i] <- fm1@param[1]      # summary(fm1)@Coef[1, 1]
+            intercept_val[i] <- fm1@param[1]      # summary(fm1)@Coef[1, 1]
             intercept_err[i] <- fm1@varparam[1, 1]
 
             coeffs_val[i] <- fm1@param[2]
@@ -118,7 +120,7 @@ betabinLRT <- function(counts1, counts2, pseudo_count=NULL, binom_only=FALSE) {
         "prop2_std"  = matrixStats::colSds(prop2),
         "coeff_mean" = coeffs_val,
         "coeff_std"  = sqrt(coeffs_err),
-        "intecept_mean" = intercept,
+        "intecept_mean" = intercept_val,
         "intecept_std"  = sqrt(intercept_err),
         "pvals" = LRT_pvals,
         "LR" = LR_vals,

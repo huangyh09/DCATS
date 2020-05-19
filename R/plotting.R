@@ -82,7 +82,7 @@ volcano_plot <- function(df_plot, min_pval=10^(-10), min_prop=3*10^(-4),
         geom_vline(xintercept=0) +
         ggrepel::geom_text_repel(aes(label = row.names(df_plot))) +
         guides(color=FALSE) + theme_bw() +
-        labs(x="Effect size", size="Prop_ctrl")
+        labs(x="Effect size on logit", size="Prop_ctrl")
     if (show_EffectStd) {
         pp <- pp + geom_pointrange(aes(xmin=coeff_mean - coeff_std,
                                        xmax=coeff_mean + coeff_std))
