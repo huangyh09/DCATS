@@ -3,24 +3,25 @@
 #### power bar
 power_bar <- function(effect_size, res_list, cutoff=0.05,
                       eff_gap=c(0.5, 1.5, 2.5, 3.5, 4.5, 6.5),
-                      Methods = c("dcats_bin_LRT", "dcats_BB_Wald",
+                      Methods = c("dcats_bin_Wald", "dcats_BB_Wald",
                                   "std_BB_LRT", "dcats_BB_LRT")) {
     group_idx = c()
     for (eff_tmp in effect_size) {
         group_idx <- c(group_idx, which.min(abs(eff_gap - abs(eff_tmp))))
     }
 
-    TPR_list <- c()
+    TPR_list <- method_list <- effsize_list <- c()
     for (i in seq_len(length(eff_gap))) {
         idx <- which(group_idx == i)
         print(paste(i, idx))
         for (method_tmp in Methods) {
             TPR_list <- c(TPR_list, mean(res_list[[method_tmp]][, idx] < cutoff))
+            method_list <- c(method_list, method_tmp)
+            effsize_list <- c(effsize_list, eff_gap[i])
         }
     }
-    df.fig = data.frame(effect_size_abs = rep(factor(eff_gap), length(Methods)),
-                        method = factor(rep(Methods, each=length(eff_gap)),
-                                        levels = Methods),
+    df.fig = data.frame(effect_size_abs = factor(effsize_list, levels=eff_gap),
+                        method = factor(method_list, levels = Methods),
                         power=TPR_list)
     ggplot(df.fig, aes(fill=method, y=power, x=effect_size_abs)) +
         geom_bar(position="dodge", stat="identity") +
@@ -39,7 +40,7 @@ qq_plot <- function(pvalues) {
 }
 
 FPR_qqplot <- function(res_list,
-                       method_list = c("dcats_bin_Wald",
+                       method_list = c("dcats_bin_LRT",
                                        "dcats_BB_Wald",
                                        "std_BB_LRT",
                                        "dcats_BB_LRT")) {
@@ -135,7 +136,7 @@ FPR_qqplot(res_FP_ctrl2)
 
 
 ### Power analysis
-eff_size = logit(prop1) - logit(prop2)
+eff_size = qlogis(prop1) - qlogis(prop2) # logit <- qlogis
 res_power1 <- sys_simulator(prop1, prop2, simMM, n_sample=10,
                             n_rep1 = 10, n_rep2=10)
 res_power2 <- sys_simulator(prop1, prop2, simMM, n_sample=10,
