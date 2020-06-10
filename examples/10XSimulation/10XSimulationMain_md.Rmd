@@ -1,0 +1,12 @@
+---
+title: "10XSimulationMain"
+author: "Hephaes"
+date: "6/10/2020"
+output: html_document
+---
+
+## Data import 
+```{r echo=TRUE, cache=TRUE}
+
+```
+
