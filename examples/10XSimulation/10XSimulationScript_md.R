@@ -14,6 +14,7 @@
 #### Required packages ####
 
 library(dplyr)
+library(clue)
 
 #### Data import ####
 
@@ -33,18 +34,21 @@ levels(meta10X[,2]) <- paste("Clust",1:20,sep="")
 #### Sampling ####
 
 set.seed(7)
-indices <- sample(1:1306127,1000)
+indices <- sample(1:1306127,100000)
 smalltsne <- tsne10X[indices,]
 smallmeta <- meta10X[indices,]
 
 #### Similarity matrix based on K-means clustering #### 
 
-smalltsne_toclust <- smalltsne[,-1]
-nclust <- length(unique(smallmeta[,2]))
-km <- kmeans(smalltsne_toclust,nclust,1000)
+subindices <- sample(1:100000,50000)
+smalltsne_toclust <- smalltsne[subindices,-1]
+smallmeta_toclust <- smallmeta[subindices,]
+nclust <- length(unique(smallmeta_toclust[,2]))
+km <- kmeans(smalltsne_toclust,nclust,10000)
 kmclust <- km$cluster
 kmclust <- as.factor(kmclust)
 levels(kmclust) <- paste("expClust",1:nclust,sep="")
-expclust1names <- kmclust[kmclust=="expClust1"]
-expclust1names <- names(expclust1names)
-meta10X[expclust1names,2]
+X <- table(kmclust,as.character(smallmeta_toclust[,2]))
+permuteorder <- as.vector(solve_LSAP(X,maximum = TRUE))
+sapply(permuteorder, function(s){X[,s]} )
+
