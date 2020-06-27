@@ -23,7 +23,7 @@ library(lattice)
 
 #### Data import and processing ####
 datapath <- paste(getwd(),"GSE96583_batch2.total.tsne.df.tsv",sep="/")
-GSE96583_batch2.total.tsne.df <- read.delim(dapath)
+GSE96583_batch2.total.tsne.df <- read.delim(datapath)
 
 # data preprocessing 
 namesbatch <- GSE96583_batch2.total.tsne.df[,3:4]
