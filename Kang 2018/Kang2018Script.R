@@ -22,8 +22,8 @@ library(ggplot2)
 library(lattice)
 
 #### Data import and processing ####
-
-GSE96583_batch2.total.tsne.df <- read.delim("~/DCATS/examples/Kang 2018/GSE96583_batch2.total.tsne.df.tsv")
+datapath <- paste(getwd(),"GSE96583_batch2.total.tsne.df.tsv",sep="/")
+GSE96583_batch2.total.tsne.df <- read.delim(dapath)
 
 # data preprocessing 
 namesbatch <- GSE96583_batch2.total.tsne.df[,3:4]
