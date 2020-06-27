@@ -5,8 +5,7 @@
 #' which should have been stored in the working directory, and which should not have their names altered 
 #' 
 #' @return 
-#' 
-#' 
+#' 1. All the objects listed in "Output data" in https://www.notion.so/hephaes/Kang-2018-Results-Reproduction-f8cd983ad6c548569bb808d0f7a0033f
 #' 
 #### Required packages #### 
 
