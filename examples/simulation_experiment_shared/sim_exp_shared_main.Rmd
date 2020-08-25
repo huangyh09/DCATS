@@ -1,0 +1,124 @@
+---
+title: "simulation_experiment_shared_main"
+author: "Hephaes"
+date: "26/08/2020"
+output: html_document
+---
+
+## Loading/downloading all required packages and functions 
+Assuming that 10X_main_approach3_splatter.R has been loaded to the current working directory, we load the required packages and functions by
+```{r loadpackages, echo=TRUE, cache=TRUE}
+library(tidyr)
+library(stringr)
+library(nabor)
+library(aod)
+library(DCATS)
+library(dplyr)
+library(clue)
+library(gridExtra)
+library(grid)
+library(ggplot2)
+library(lattice)
+library(plotly)
+library(svMisc)
+library(gtools)
+library(DCATS)
+library(lme4)
+library(scDC)
+library(splatter)
+library(scater)
+library(Seurat)
+
+source("10X_main_approach3_splat.r")
+set.seed(1000)
+```
+
+## Generation of simulated data 
+
+```{r generate_data, echo=TRUE, cache=TRUE}
+
+param.groups <- newSplatParams(batchCells = 6000, nGenes = 100)
+sim1 <- splatSimulateGroups(param.groups, group.prob = c(1/3,1/3,1/3), de.prob = c(0.01,0.01,0.5), verbose = FALSE)
+celllabels_orig <- sim1@colData@listData$Group
+sim1count_mat <- counts(sim1)
+seuratobject <- CreateSeuratObject(counts = sim1count_mat, project="Splatter")
+seuratobject <- NormalizeData(seuratobject)
+seuratobject <- FindVariableFeatures(seuratobject, selection.method = "vst", nfeatures = 50)
+all.genes <- rownames(seuratobject)
+seuratobject <- ScaleData(seuratobject,features = all.genes)
+seuratobject <- RunPCA(seuratobject,features = VariableFeatures(object = seuratobject))
+seuratobject<-FindNeighbors(seuratobject, k.params=3, dims = 1:5)
+seuratobject<-FindClusters(seuratobject, resolution = 0.3, algorithm=2)
+DimPlot(seuratobject, reduction = "pca", group.by='ident')
+seuratobject <- RunUMAP(seuratobject, dims = 1:10)
+DimPlot(seuratobject, reduction = "umap", group.by='ident')
+Idents(seuratobject)
+DimHeatmap(seuratobject, dims = 1:3, cells = 300, balanced = TRUE)
+# Confusion matrix
+conf.mat<-table(Idents(seuratobject), celllabels_orig)
+conf.mat
+
+```
+
+## Sampling of the simulated data 
+
+```{r sampling, echo=TRUE, cache=TRUE}
+celllabels_orig <- sim1@colData@listData$Group
+newinputdata <- cbind(as.data.frame(t(sim1count_mat)),as.character(celllabels_orig))
+samples <- samplingfromInputData_approach3(newinputdata = newinputdata,random = TRUE,n_subject = 2,n_cells=700,first_prop = 0.1,conc1 = 5,conc2 = 10)
+#structure of samples
+samples[[1]][c(1,70,150),c(1,2,101,102)]
+#showing diff_size vectors 
+samples[[3]]
+samples[[4]]
+#getting the gene-cell count matrix of the sampled data
+sampledmat <- t(rbind(samples[[1]][,1:100],samples[[2]][,1:100]))
+sampledmat[1:10,1:10]
+
+```
+
+## Getting essential data from the sample data 
+
+```{r get_essential_data, echo=TRUE, cache=TRUE}
+
+treat_by_Seurat <- function(sampledmat){
+  seuratobject <- CreateSeuratObject(counts = sampledmat, project="Splatter")
+  seuratobject <- NormalizeData(seuratobject)
+  seuratobject <- FindVariableFeatures(seuratobject, selection.method = "vst", nfeatures = 50)
+  all.genes <- rownames(seuratobject)
+  seuratobject <- ScaleData(seuratobject,features = all.genes)
+  seuratobject <- RunPCA(seuratobject,features = VariableFeatures(object = seuratobject))
+  seuratobject <- FindNeighbors(seuratobject, k.params=3, dims = 1:5)
+  seuratobject <- FindClusters(seuratobject, resolution = 0.3, algorithm=2)
+  return(seuratobject)
+}
+
+Sampleseuratobject <- treat_by_Seurat(sampledmat)
+KNNgraph <- Sampleseuratobject@graphs$RNA_snn
+Samplecelltype_labels <- Idents(Sampleseuratobject)
+
+#KNN-based similarity matrix
+misclassM <- KNN_transition(KNNgraph,Samplecelltype_labels)
+
+#confused_subject_cell_type_matrix
+conf_sub_cell_type_mat <- table(rbind(as.character(samples[[1]][,102]),as.character(samples[[2]][,102])),Samplecelltype_labels)
+
+#show
+misclassM
+conf_sub_cell_type_mat
+```
+
+## Testing on DCATS
+```{r test_dcats, echo=TRUE, cache=TRUE}
+
+binom_wM <- dcats_fit(conf_sub_cell_type_mat[1:2,],conf_sub_cell_type_mat[3:4,],similarity_mat = misclassM)
+binom_woM <- dcats_fit(conf_sub_cell_type_mat[1:2,],conf_sub_cell_type_mat[3:4,],similarity_mat = get_similarity_mat(3,0))
+binom_wM
+binom_woM
+```
+
+
+
+
+
+
