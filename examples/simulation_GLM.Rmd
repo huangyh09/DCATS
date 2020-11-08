@@ -1,0 +1,179 @@
+---
+title: 'Differential composition analysis: beta binomial vs negative binomial'
+author: Yuanhua Huang
+date: 08/11/2020
+output:
+  html_document:
+    df_print: paged
+---
+
+In this notebook, we will compare the performance of generalised linear model 
+with beta-binomial and negative binomial distributions on differential 
+composition analysis. Here, both beta-binomial and negative binomial GLM are 
+fitted with [aod](https://www.rdocumentation.org/packages/aod/versions/1.3.1) 
+package.
+
+The simulation is based on Dirichlet-multinomial distribution. The total cell
+numbers, and seed cell type composition is obtained directly from real data. 
+Based on this simulation model, the Beta-binomial GLM clearly outperforms the
+negative binomial GLM in both false positive control and overall AUC score.
+
+## Load library
+```{r}
+library(DCATS)
+library(ggpubr)
+```
+
+## Load CSF data as seed
+```{r}
+seed_dat <- read.table('CSF_cell_counts.csv', sep=',', header = TRUE, row.names=1)
+seed_ids <- seed_dat[, 1, drop = FALSE]
+seed_count_mat <- seed_dat[, 2:ncol(seed_dat)]
+prop_mean <- colSums(seed_count_mat[seed_ids >= 0, ])
+prop_mean <- prop_mean / sum(prop_mean)
+```
+
+## P value calibration under the null
+### Single simulaiton
+```{r}
+set.seed(1)
+
+dirichlet_s1 = prop_mean * 100
+dirichlet_s2 = prop_mean * 100
+total_samples1 = rowSums(seed_count_mat)[seed_ids[, 1] == 1]
+total_samples2 = rowSums(seed_count_mat)[seed_ids[, 1] == 0]
+
+simMM_uni <- get_similarity_mat(K=ncol(seed_count_mat), confuse_rate = 0.05)
+
+sim_dat <- DCATS::simulator_base(total_samples1, total_samples2,
+                                 dirichlet_s1, dirichlet_s2, 
+                                 similarity_mat=simMM_uni)
+```
+
+
+```{r}
+# source('dcats_GLM.R')
+cell_count <- rbind(sim_dat$numb_cond1, sim_dat$numb_cond2)
+res_nega <- dcats_GLM(count_mat = cell_count, design_mat = seed_ids, model='negbin')
+res_beta <- dcats_GLM(count_mat = cell_count, design_mat = seed_ids, model='betabin')
+
+res_nega$pvals
+res_beta$pvals
+```
+
+### Repeating many times
+```{r}
+sys_simulator <- function(prop1, prop2, simMM, n_sample=50,
+                          concertration1=50, concertration2=50,
+                          total_samples1, total_samples2) {
+  mat_negabin <- mat_betabin <- matrix(NA, n_sample, length(prop1))
+  
+  for (ir in seq_len(n_sample)) {
+    print(paste("iteration", ir))
+    
+    dirichlet_s1 = prop1 * concertration1
+    dirichlet_s2 = prop2 * concertration2
+    
+    sim_dat <- DCATS::simulator_base(total_samples1, total_samples2,
+                                     dirichlet_s1, dirichlet_s2, 
+                                     similarity_mat=simMM)
+    
+    cell_count <- rbind(sim_dat$numb_cond1, sim_dat$numb_cond2)
+    design_mat <- rbind(matrix(1, length(total_samples1), 1),
+                        matrix(0, length(total_samples2), 1))
+    
+    res_nega <- dcats_GLM(cell_count, design_mat, model='negbin')
+    res_beta <- dcats_GLM(cell_count, design_mat, model='betabin')
+    
+    mat_betabin[ir, ] <- res_beta$pvals
+    mat_negabin[ir, ] <- res_nega$pvals
+  }
+  list("dcats_negabin"=mat_negabin,
+       "dcats_betabin"=mat_betabin)
+}
+```
+
+
+```{r}
+### False positive controls
+set.seed(1)
+
+## change Dirichlet concertration for different level of variations between 
+## replicates. Potential values: 10, 50, 100
+concertration = 50  
+res_FP_ctrl1 <- sys_simulator(prop_mean, prop_mean, simMM_uni, n_sample = 20,
+                              concertration1=concertration, 
+                              concertration2=concertration,
+                              total_samples1, total_samples2)
+
+qq_plot(res_FP_ctrl1[["dcats_negabin"]]) + ggtitle('Nega-binom GLM')
+qq_plot(res_FP_ctrl1[["dcats_betabin"]]) + ggtitle('Beta-binom GLM')
+```
+
+
+## Power analysis
+```{r}
+set.seed(1)
+
+n_sample = 20
+concertration = 50
+effect_size = 3
+
+# diff_label <- c(rep(-1, 2), rep(1, 2), rep(0, 11))
+diff_label <- c(rep(-1, 3), rep(1, 3), rep(0, 9))
+diff_truth <- matrix(0, length(prop_mean), n_sample)
+
+for (ir in seq(n_sample)) {
+  diff_truth[, ir] <- sample(diff_label, size = length(diff_label), replace = FALSE)
+  idx_diff <- diff_truth[, ir] != 0
+  
+  prop1_logit <- qlogis(prop_mean) + diff_truth[, ir] * effect_size
+  prop1 <- plogis(prop1_logit)
+  prop1[idx_diff] <- (prop1[idx_diff] / sum(prop1[idx_diff]) * 
+                        (1 - sum(prop1[!idx_diff])))
+  
+  res_temp <- sys_simulator(prop1, prop_mean, simMM_uni, n_sample = 1,
+                            concertration1=concertration, 
+                            concertration2=concertration,
+                            total_samples1, total_samples2)
+  
+  if (ir == 1) {
+    res_diff <- res_temp
+  } else{
+    for (ik in seq(length(res_temp))) {
+      res_diff[[ik]] <- rbind(res_diff[[ik]], res_temp[[ik]])
+    }
+  }
+  
+}
+
+```
+```{r}
+roc_plot <- function(PRROC_obj, p_min=0.0001, 
+                     log10_p_breaks=c(0.5, 1, 2, 3, 4)) {
+  df_roc <- as.data.frame(PRROC_obj$curve)
+  colnames(df_roc) <- c('FPR', 'Sensitivity', 'p')
+  df_roc$p[df_roc$p < p_min] <- p_min
+  
+  ggplot(data = df_roc, aes(x = FPR, y = Sensitivity, color=-log10(p))) +
+    geom_line(size=1) + theme_bw() +
+    viridis::scale_color_viridis(breaks=c(0.5, 1, 2, 3, 4), limits = c(0, 4))
+}
+
+library(PRROC)
+
+PRROC_obj <- roc.curve(scores.class0 = 1 - t(res_diff$dcats_betabin), 
+                       weights.class0 = (diff_truth != 0), curve=TRUE)
+PRROC_obj$curve[, 3] <- 1 - PRROC_obj$curve[, 3]
+roc_plot(PRROC_obj) + ggtitle(paste0('Beta-binom GLM: ', 
+                                     'AUROC=', round(PRROC_obj$auc, 4)))
+
+
+PRROC_obj <- roc.curve(scores.class0 = 1 - t(res_diff$dcats_negabin), 
+                       weights.class0 = (diff_truth != 0), curve=TRUE)
+PRROC_obj$curve[, 3] <- 1 - PRROC_obj$curve[, 3]
+# plot(PRROC_obj)
+roc_plot(PRROC_obj) + ggtitle(paste0('Nega-binom GLM: ', 
+                                     'AUROC=', round(PRROC_obj$auc, 4)))
+```
+
