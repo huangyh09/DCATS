@@ -28,7 +28,8 @@
 #' sim_design = matrix(c("g1", "g1", "g1", "g1", "g2", "g2", "g2"), ncol = 1)
 #' dcats_GLM(sim_count, sim_design, similarity_mat = simil_mat) 
 #'
-dcats_GLM <- function(count_mat, design_mat, similarity_mat=NULL, base_model='NULL') {
+dcats_GLM <- function(count_mat, design_mat, similarity_mat=NULL, n_samples=50,
+                      pseudo_count=NULL,  base_model='NULL') {
   # Output matrices
   coeffs     <- matrix(NA, ncol(count_mat), ncol(design_mat))
   coeffs_err <- matrix(NA, ncol(count_mat), ncol(design_mat))
@@ -56,12 +57,41 @@ dcats_GLM <- function(count_mat, design_mat, similarity_mat=NULL, base_model='NU
       multinom_EM(count_mat[i, ], similarity_mat, verbose = FALSE)$mu
   }
   
-  count_mat = round(count_latent)
+  K <- ncol(count_mat) ## number of cell types
+  if (is.null(similarity_mat)) {
+    n_samples <- 1
+  }
+  
+  if (!is.null(n_samples) && !is.null(similarity_mat)) {
+    count_use <- matrix(0, nrow(count_mat) * n_samples, K)
+    for (i in seq_len(nrow(count_mat))) {
+      idx <- seq((i - 1) * n_samples + 1, i * n_samples)
+      for (j in seq_len(K)) {
+        count_use[idx, ] <- (
+          count_use[idx, ] + t(rmultinom(n_samples, count_latent[i, j], similarity_mat[j, ])))
+      }
+    }
+  } else{
+    count_use <- count_mat
+  }
+  
+  # adding pseudo counts
+  if (is.null(pseudo_count)) {
+    if (any(colMeans(count_mat) == 0)) {
+      print(paste("Empty cell type exists in at least one conidtion;",
+                  "adding replicate & condition specific pseudo count:"))
+      count_use <- count_use + 1
+    }
+  } else {
+    count_use = count_use + pseudo_count
+  }
+  
+  count_use = round(count_use)
   
   # Test each factor
-  for (m in seq_len(ncol(count_mat))) {
+  for (m in seq_len(ncol(count_use))) {
     for (k in seq_len(ncol(design_mat))) {
-      df_use <- data.frame(n1 = count_mat[, m], total=rowSums(count_mat))
+      df_use <- data.frame(n1 = count_use[, m], total=rowSums(count_use))
       df_use <- cbind(df_use, as.data.frame(design_mat)[, k, drop=FALSE])
 
       df_tmp <- df_use[!is.na(design_mat[, k]), ]

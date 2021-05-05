@@ -32,7 +32,7 @@
 #' dcats_fit(sim_dat[[1]], sim_dat[[2]], confuse_mat, n_samples = 100)
 #'
 dcats_betabin <- function(counts1, counts2, similarity_mat=NULL, n_samples=50,
-                          pseudo_count=NULL, binom_only=TRUE) {
+                          pseudo_count=NULL) {
     ## Check counts1 and counts2 shape
     if (length(counts1) == 1 || is.null(dim(counts1)) ||
         length(dim(counts1)) < 2) {
@@ -99,7 +99,7 @@ dcats_betabin <- function(counts1, counts2, similarity_mat=NULL, n_samples=50,
             counts2_use <- counts2_use + 1
         }
     } else {
-        counts2_use = counts2_use + pseudo_count
+        counts1_use = counts1_use + pseudo_count
         counts2_use = counts2_use + pseudo_count
     }
 
