@@ -15,8 +15,20 @@
 #'
 #' @export
 #' @import matrixStats
+#' 
+#' @examples
+#' K <- 3
+#' totals1 = c(100, 800, 1300, 600)
+#' totals2 = c(250, 700, 1100)
+#' diri_s1 = rep(1, K) * 20
+#' diri_s2 = rep(1, K) * 20
+#' simil_mat = get_similarity_mat(K, confuse_rate=0.2)
+#' sim_dat <- DCATS::simulator_base(totals1, totals2, diri_s1, diri_s2, simil_mat)
+#' sim_count = rbind(sim_dat$numb_cond1, sim_dat$numb_cond2)
+#' sim_design = matrix(c("g1", "g1", "g1", "g1", "g2", "g2", "g2"), ncol = 1)
+#' dcats_GLM(sim_count, sim_design, similarity_mat = simil_mat) 
 #'
-dcats_GLM <- function(count_mat, design_mat, model='betabin', base_model='NULL') {
+dcats_GLM <- function(count_mat, design_mat, similarity_mat=NULL, base_model='NULL') {
   # Output matrices
   coeffs     <- matrix(NA, ncol(count_mat), ncol(design_mat))
   coeffs_err <- matrix(NA, ncol(count_mat), ncol(design_mat))
@@ -35,7 +47,17 @@ dcats_GLM <- function(count_mat, design_mat, model='betabin', base_model='NULL')
     rownames(coeffs) <- rownames(coeffs_err) <- colnames(count_mat)
   colnames(LR_vals) <- colnames(LRT_pvals) <- colnames(LRT_fdr) <-
     colnames(coeffs) <- colnames(coeffs_err) <- colnames(design_mat)
-
+  
+  
+  ## using estimated the latent cell counts
+  count_latent = count_mat
+  for (i in seq_len(nrow(count_mat))) {
+    count_latent[i, ] <- sum(count_mat[i, ]) *
+      multinom_EM(count_mat[i, ], similarity_mat, verbose = FALSE)$mu
+  }
+  
+  count_mat = round(count_latent)
+  
   # Test each factor
   for (m in seq_len(ncol(count_mat))) {
     for (k in seq_len(ncol(design_mat))) {
@@ -43,20 +65,12 @@ dcats_GLM <- function(count_mat, design_mat, model='betabin', base_model='NULL')
       df_use <- cbind(df_use, as.data.frame(design_mat)[, k, drop=FALSE])
 
       df_tmp <- df_use[!is.na(design_mat[, k]), ]
-
-      if (model == 'betabin') {
-        fm0 <- aod::betabin(cbind(n1, total-n1) ~ 1, ~ 1, data = df_tmp)
-
-        formula_fix <- as.formula(paste0('cbind(n1, total-n1)', '~ 1+',
+      
+      ## model fitting using betabin
+      fm0 <- aod::betabin(cbind(n1, total-n1) ~ 1, ~ 1, data = df_tmp)
+      formula_fix <- as.formula(paste0('cbind(n1, total-n1)', '~ 1+',
                                          colnames(design_mat)[k], sep=''))
-        fm1 <- aod::betabin(formula_fix, ~ 1, data = df_tmp)
-      } else {
-        fm0 <- aod::negbin(n1 ~ total + 1, ~ 1, data = df_tmp)
-
-        formula_fix <- as.formula(paste0('n1 ~  ', colnames(design_mat)[k],
-                                         '+ total + 1', sep=''))
-        fm1 <- aod::negbin(formula_fix, ~ 1, data = df_tmp)
-      }
+      fm1 <- aod::betabin(formula_fix, ~ 1, data = df_tmp)
 
       ## ignore the fitting if the hessian matrix is singular
       if (length(fm1@varparam) < 4 || is.na(fm1@varparam[2, 2])) {next}
