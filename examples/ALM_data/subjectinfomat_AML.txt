@@ -1,6 +1,0 @@
-"B" "cDC" "cDC-like" "CTL" "earlyEry" "GMP" "GMP-like" "HSC" "HSC-like" "lateEry" "Mono" "Mono-like" "NK" "pDC" "Plasma" "ProB" "Prog" "Prog-like" "ProMono" "ProMono-like" "T"
-"AML1012.D0" 0 32 122 13 33 51 190 21 51 0 49 152 3 0 1 2 39 183 22 158 14
-"BM1" 0 3 0 5 3 7 0 2 0 17 24 0 0 4 4 14 2 0 13 0 10
-"BM2" 2 13 0 3 8 8 0 5 0 21 59 0 1 5 6 10 9 0 21 0 17
-"BM3" 16 46 0 38 84 49 0 13 0 63 87 0 13 22 5 3 33 0 83 0 88
-"BM4" 95 216 0 215 411 351 0 15 0 160 395 0 143 52 54 97 424 0 505 0 605
