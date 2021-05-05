@@ -43,23 +43,6 @@ dcats_betabin <- function(counts1, counts2, similarity_mat=NULL, n_samples=50,
         counts2 = matrix(counts2, nrow=1)
     }
 
-    ## add base pseudo count if zero cells for all replicate
-    # if (is.null(pseudo_count)) {
-    #     if (any(colMeans(counts1) == 0) || any(colMeans(counts2) == 0) ) {
-    #         print(paste("Empty cell type exists in at least one conidtion;",
-    #                     "adding replicate & condition specific pseudo count:"))
-    #         print(0.01 * rowMeans(counts1))
-    #         print(0.01 * rowMeans(counts2))
-    #
-    #         # counts1 = counts1 + 0.01 * rowMeans(counts1)
-    #         # counts2 = counts2 + 0.01 * rowMeans(counts2)
-    #         counts1 = counts1 + 1
-    #         counts2 = counts2 + 1
-    #     }
-    # } else {
-    #     counts1 = counts1 + pseudo_count
-    #     counts2 = counts2 + pseudo_count
-    # }
     prop1 <- counts1 / rowSums(counts1)
     prop2 <- counts2 / rowSums(counts2)
 
@@ -134,37 +117,24 @@ dcats_betabin <- function(counts1, counts2, similarity_mat=NULL, n_samples=50,
             n1 <- c(counts1_use[, i], counts2_use[, i])[idx]
             df <- data.frame(n1 = n1, n2 = total_all[idx] - n1,
                              label = label_all[idx])
-            if (binom_only) {
-                model1 <- glm(cbind(n1, n2) ~ label + 1,
-                              family = binomial(), data = df)
-                coeffs_val[ir, i] <- summary(model1)$coefficients[2, 1]
-                coeffs_err[ir, i] <- summary(model1)$coefficients[2, 2]
-                intercept_val[ir, i] <- summary(model1)$coefficients[1, 1]
-                intercept_err[ir, i] <- summary(model1)$coefficients[1, 2]
-
-                model0 <- glm(cbind(n1, n2) ~ 1,
-                              family = binomial(), data = df)
-                LR_val[ir, i] <- model0$deviance - model1$deviance
-            } else{
-
-                fm1 <- aod::betabin(cbind(n1, n2) ~ label, ~ 1, data = df)
-                if (any(is.na(fm1@varparam))) {
-                    print(fm1)
-                    print(df)
-                }
-                coeffs_val[ir, i] <- fm1@param[2]
+            ## betabin GLM
+            fm1 <- aod::betabin(cbind(n1, n2) ~ label, ~ 1, data = df)
+            if (any(is.na(fm1@varparam))) {
+                print(fm1)
+                print(df)
+            } else {
                 coeffs_err[ir, i] <-fm1@varparam[2, 2]
-                intercept_val[ir, i] <- fm1@param[1] # summary(fm1)@Coef[1, 1]
-                intercept_err[ir, i] <- fm1@varparam[1, 1]
-
-                fm0 <- aod::betabin(cbind(n1, n2) ~ 1, ~ 1, data = df)
-                LR_val[ir, i] <- fm0@dev - fm1@dev
+                }
+            coeffs_val[ir, i] <- fm1@param[2]
+            intercept_val[ir, i] <- fm1@param[1] # summary(fm1)@Coef[1, 1]
+            intercept_err[ir, i] <- fm1@varparam[1, 1]
+            
+            fm0 <- aod::betabin(cbind(n1, n2) ~ 1, ~ 1, data = df)
+            LR_val[ir, i] <- fm0@dev - fm1@dev
             }
-
-        }
     }
 
-    ## Averaging the coeffcients errors
+    ## Averaging the coeficients errors
     if (is.null(n_samples) || is.null(similarity_mat) || n_samples == 1) {
         coeff_val_mean <- colMeans(coeffs_val)
         coeff_err_pool <- colMeans(coeffs_err**2)
