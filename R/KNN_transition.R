@@ -11,6 +11,10 @@
 #' sum(KNN_matrix) = n_sample * K, where K is the number neighbours.
 #' @param clusters a (n_sample, ) vector of cluster id for each sample.
 #' @export
+#' 
+#' @example
+#' data(simulation) 
+#' knn_mat = KNN_transition(simulation$knnGraphs, simulation$labels)
 #'
 KNN_transition <- function(KNN_matrix, clusters){
     clusters_uniq <- unique(clusters)
