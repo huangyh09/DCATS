@@ -13,11 +13,11 @@ simulator_base(
 )
 }
 \arguments{
-\item{totals_cond1}{A vector of integers (n_rep1, ) for the total samples
-in each replicate in codition 1}
+\item{totals_cond1}{A vector of integers (n_rep1, ) for the total samples in
+each replicate in codition 1}
 
-\item{totals_cond2}{A vector of integers (n_rep2, ) for the total samples
-in each replicate in codition 2}
+\item{totals_cond2}{A vector of integers (n_rep2, ) for the total samples in
+each replicate in codition 2}
 
 \item{dirichlet_s1}{A vector of floats (n_cluster, ) for the composition
 concentration in condition 1}
@@ -30,7 +30,7 @@ similarity matrix between each cluster pair}
 }
 \value{
 a list of two matrices for composition sizes in each replicate and
-each cluster in both conditions.
+  each cluster in both conditions.
 }
 \description{
 Directly simulating the composition size from a Dirichlet-Multinomial

@@ -20,8 +20,8 @@ replicate in each cluster for codition 1 as case}
 replicate in each cluster for codition 2 as control}
 
 \item{similarity_mat}{A matrix of floats (n_cluster, n_cluster) for the
-similarity matrix between cluster group pair. The order of cluster should be 
-consistent with those in `counts1` and `counts2`}
+similarity matrix between cluster group pair. The order of cluster should
+be consistent with those in `counts1` and `counts2`}
 
 \item{n_samples}{An integer for number samples in sampling for estimating the
 variance of the weights}

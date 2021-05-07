@@ -2,8 +2,8 @@
 % Please edit documentation in R/KNN_transition.R
 \name{KNN_transition}
 \alias{KNN_transition}
-\title{Calculate stochastic transition matrix between clusters from a KNN
-connection matrix}
+\title{Calculate stochastic transition matrix between clusters from a KNN connection
+matrix}
 \usage{
 KNN_transition(KNN_matrix, clusters)
 }

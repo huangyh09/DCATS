@@ -1,19 +1,19 @@
 #' An EM algorithm to fit a multinomial with maximum likelihood
 #'
 #' @param X A vector of commopent sizes
-#' @param simMM A matrix of floats (n_cluster, n_cluster) for the
-#' similarity matrix between clusters. simMM[i,j] means the proportion of
-#' cluster i will be assigned to cluster j, hence colSums(simMM) are ones.
+#' @param simMM A matrix of floats (n_cluster, n_cluster) for the similarity
+#'   matrix between clusters. simMM[i,j] means the proportion of cluster i will
+#'   be assigned to cluster j, hence colSums(simMM) are ones.
 #' @param max_iter integer(1). number of maximum iterations
 #' @param min_iter integer(1). number of minimum iterations
 #' @param logLik_threshold A float. The threshold of logLikelihood increase for
-#' detecting convergence
+#'   detecting convergence
 #'
 #' @return a list containing \code{mu}, a vector for estimated latent proportion
-#' of each cluster, \code{logLik}, a float for the estimated log likelihood,
-#' \code{simMM}, the input of simMM, code{X}, the input of X, \code{X_prop},
-#' the proportion of clusters in the input X, \code{predict_X_prop}, and the
-#' predicted proportion of clusters based on mu and simMM.
+#'   of each cluster, \code{logLik}, a float for the estimated log likelihood,
+#'   \code{simMM}, the input of simMM, code{X}, the input of X, \code{X_prop},
+#'   the proportion of clusters in the input X, \code{predict_X_prop}, and the
+#'   predicted proportion of clusters based on mu and simMM.
 #'
 #' @export
 #'
@@ -21,7 +21,7 @@
 #' X = c(100, 300, 1500, 500, 1000)
 #' simMM = get_similarity_mat(5, confuse_rate=0.2)
 #' multinom_EM(X, simMM)
-#'
+#' 
 multinom_EM <- function(X, simMM, min_iter=10, max_iter=1000,
                         logLik_threshold=1e-2, verbose=TRUE) {
     # Be very careful on the shape of simMM; rowSums(simMM) = 1

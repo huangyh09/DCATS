@@ -1,7 +1,6 @@
 Package: DCATS
 Type: Package
-Title: Differential composition analysis tweaked with similarity in scRNA-seq 
-    data
+Title: Differential Composition Analysis Transformed by a Similarity matrix
 Version: 0.2.0
 Author: Hephaes Chuen Chau, Yuanhua Huang, Joshua Ho
 Maintainer: The package maintainer <yourself@somewhere.net>
@@ -12,6 +11,6 @@ Depends: R (>= 3.4), stats
 Imports: Matrix, ggplot2
 Suggests: knitr
 VignetteBuilder: knitr
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.1
 Encoding: UTF-8
 LazyData: true

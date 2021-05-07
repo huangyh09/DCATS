@@ -16,9 +16,9 @@ multinom_EM(
 \arguments{
 \item{X}{A vector of commopent sizes}
 
-\item{simMM}{A matrix of floats (n_cluster, n_cluster) for the
-similarity matrix between clusters. simMM[i,j] means the proportion of
-cluster i will be assigned to cluster j, hence colSums(simMM) are ones.}
+\item{simMM}{A matrix of floats (n_cluster, n_cluster) for the similarity
+matrix between clusters. simMM[i,j] means the proportion of cluster i will
+be assigned to cluster j, hence colSums(simMM) are ones.}
 
 \item{min_iter}{integer(1). number of minimum iterations}
 
@@ -29,10 +29,10 @@ detecting convergence}
 }
 \value{
 a list containing \code{mu}, a vector for estimated latent proportion
-of each cluster, \code{logLik}, a float for the estimated log likelihood,
-\code{simMM}, the input of simMM, code{X}, the input of X, \code{X_prop},
-the proportion of clusters in the input X, \code{predict_X_prop}, and the
-predicted proportion of clusters based on mu and simMM.
+  of each cluster, \code{logLik}, a float for the estimated log likelihood,
+  \code{simMM}, the input of simMM, code{X}, the input of X, \code{X_prop},
+  the proportion of clusters in the input X, \code{predict_X_prop}, and the
+  predicted proportion of clusters based on mu and simMM.
 }
 \description{
 An EM algorithm to fit a multinomial with maximum likelihood

@@ -4,19 +4,19 @@
 #' Directly simulating the composition size from a Dirichlet-Multinomial
 #' distribution with replicates for two conditions.
 #'
-#' @param totals_cond1 A vector of integers (n_rep1, ) for the total samples
-#' in each replicate in codition 1
-#' @param totals_cond2 A vector of integers (n_rep2, ) for the total samples
-#' in each replicate in codition 2
+#' @param totals_cond1 A vector of integers (n_rep1, ) for the total samples in
+#'   each replicate in codition 1
+#' @param totals_cond2 A vector of integers (n_rep2, ) for the total samples in
+#'   each replicate in codition 2
 #' @param dirichlet_s1 A vector of floats (n_cluster, ) for the composition
-#' concentration in condition 1
+#'   concentration in condition 1
 #' @param dirichlet_s2 A vector of floats (n_cluster, ) for the composition
-#' concentration in condition 2
+#'   concentration in condition 2
 #' @param similarity_mat A matrix of floats (n_cluster, n_cluster) for the
-#' similarity matrix between each cluster pair
+#'   similarity matrix between each cluster pair
 #'
 #' @return a list of two matrices for composition sizes in each replicate and
-#' each cluster in both conditions.
+#'   each cluster in both conditions.
 #'
 #' @export
 #' @import MCMCpack
@@ -30,7 +30,7 @@
 #' confuse_rate = 0.2
 #' simil_mat = diag(K) * (1 - confuse_rate) + confuse_rate * (1 - diag(K)) / 3
 #' sim_dat <- simulator_base(totals1, totals2, diri_s1, diri_s2, simil_mat)
-#'
+#' 
 simulator_base <- function(totals_cond1, totals_cond2,
                            dirichlet_s1, dirichlet_s2,
                            similarity_mat=NULL) {

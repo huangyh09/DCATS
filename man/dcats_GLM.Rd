@@ -21,7 +21,8 @@ cluster in each sample}
 with same sample order as count_mat}
 
 \item{base_model}{A string value: `NULL` for 1 factor vs NULL factor testing;
-`FULL` for FULL facotrs vs n-1 factors testing. Only `NULL` is supported now.}
+`FULL` for FULL facotrs vs n-1 factors testing. Only `NULL` is supported
+now.}
 
 \item{model}{A string value: `betabin` for beta-binomial and `negbin` for
 negative binomial distribution}
@@ -42,6 +43,6 @@ simil_mat = get_similarity_mat(K, confuse_rate=0.2)
 sim_dat <- DCATS::simulator_base(totals1, totals2, diri_s1, diri_s2, simil_mat)
 sim_count = rbind(sim_dat$numb_cond1, sim_dat$numb_cond2)
 sim_design = matrix(c("g1", "g1", "g1", "g1", "g2", "g2", "g2"), ncol = 1)
-dcats_GLM(sim_count, sim_design, similarity_mat = simil_mat) 
+dcats_GLM(sim_count, sim_design, similarity_mat = simil_mat)
 
 }
