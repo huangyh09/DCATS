@@ -12,10 +12,11 @@
 #' @param clusters a (n_sample, ) vector of cluster id for each sample.
 #' @export
 #' 
-#' @example
-#' data(simulation) 
+#' @examples
+#' data(simulation)
 #' knn_mat = KNN_transition(simulation$knnGraphs, simulation$labels)
-#'
+#' 
+
 KNN_transition <- function(KNN_matrix, clusters){
     clusters_uniq <- unique(clusters)
     n_cluster <- length(clusters_uniq)

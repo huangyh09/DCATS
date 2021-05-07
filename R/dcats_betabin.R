@@ -9,7 +9,8 @@
 #' @param counts2 A matrix of compsition sizes (n_rep2, n_cluster) for each
 #' replicate in each cluster for codition 2 as control
 #' @param similarity_mat A matrix of floats (n_cluster, n_cluster) for the
-#' similarity matrix between cluster group pair
+#' similarity matrix between cluster group pair. The order of cluster should be 
+#' consistent with those in `counts1` and `counts2`
 #' @param pseudo_count A pseudo count to add for counts in all cell types.
 #' Default NULL means 0 except if a cell type is emplty in one condition,
 #' otherwise pseudo_count will be: 0.01 * rowMeans for each condition
@@ -31,6 +32,7 @@
 #' sim_dat <- DCATS::simulator_base(totals1, totals2, diri_s1, diri_s2, simil_mat)
 #' dcats_fit(sim_dat[[1]], sim_dat[[2]], confuse_mat, n_samples = 100)
 #'
+
 dcats_betabin <- function(counts1, counts2, similarity_mat=NULL, n_samples=50,
                           pseudo_count=NULL) {
     ## Check counts1 and counts2 shape

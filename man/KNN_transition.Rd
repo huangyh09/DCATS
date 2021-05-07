@@ -19,3 +19,8 @@ The transition probability from cluster i to j is the fraction of neighbours
 of all samples in cluster i that belongs to cluster j. Note, this matrix is
 asymmetric, so as the input KNN connection matrix.
 }
+\examples{
+data(simulation)
+knn_mat = KNN_transition(simulation$knnGraphs, simulation$labels)
+
+}
