@@ -14,10 +14,10 @@
 #'
 #' @examples
 #' data(simulation)
-#' knn_mat = KNN_transition(simulation$knnGraphs, simulation$labels)
+#' knn_mat = knn_simMat(simulation$knnGraphs, simulation$labels)
 #' 
 
-KNN_transition <- function(KNN_matrix, clusters){
+knn_simMat <- function(KNN_matrix, clusters){
     clusters_uniq <- unique(clusters)
     n_cluster <- length(clusters_uniq)
 
