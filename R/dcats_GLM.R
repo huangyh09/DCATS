@@ -2,14 +2,20 @@
 #'
 #' GLM supports both beta-binomial and negative binomial from aod package.
 #'
-#' @param count_mat A matrix of compsition sizes (n_sample, n_cluster) for each
+#' @param count_mat A matrix of composition sizes (n_sample, n_cluster) for each
 #'   cluster in each sample
 #' @param design_mat A matrix of testing candidate factors (n_sample, n_factor)
 #'   with same sample order as count_mat
-#' @param model A string value: `betabin` for beta-binomial and `negbin` for
-#'   negative binomial distribution
+#' @param similarity_mat A matrix of floats (n_cluster, n_cluster) for the
+#'   similarity matrix between cluster group pair. The order of cluster should
+#'   be consistent with those in `count_mat`.
+#' @param pseudo_count A pseudo count to add for counts in all cell types.
+#'   Default NULL means 0 except if a cell type is empty in one condition,
+#'   otherwise pseudo_count will be: 0.01 * rowMeans for each condition
+#' @param n_samples An integer for number samples in sampling for estimating the
+#'   variance of the weights
 #' @param base_model A string value: `NULL` for 1 factor vs NULL factor testing;
-#'   `FULL` for FULL facotrs vs n-1 factors testing. Only `NULL` is supported
+#'   `FULL` for FULL factors vs n-1 factors testing. Only `NULL` is supported
 #'   now.
 #'
 #' @return a list of significance p values for each cluster

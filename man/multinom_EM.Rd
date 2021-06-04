@@ -26,6 +26,8 @@ be assigned to cluster j, hence colSums(simMM) are ones.}
 
 \item{logLik_threshold}{A float. The threshold of logLikelihood increase for
 detecting convergence}
+
+\item{verbose}{A logic. Whether to print the iteration times and log likelihood.}
 }
 \value{
 a list containing \code{mu}, a vector for estimated latent proportion
