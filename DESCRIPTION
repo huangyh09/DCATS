@@ -11,7 +11,8 @@ Depends: R (>= 3.4), stats
 Imports: MCMCpack, matrixStats, robustbase, aod
 Suggests: 
     testthat (>= 3.0.0),
-    knitr
+    knitr,
+    SeuratObject
 VignetteBuilder: knitr
 RoxygenNote: 7.1.1
 Encoding: UTF-8

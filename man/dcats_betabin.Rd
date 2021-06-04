@@ -45,6 +45,6 @@ diri_s1 = rep(1, K) * 20
 diri_s2 = rep(1, K) * 20
 simil_mat = get_similarity_mat(K, confuse_rate=0.2)
 sim_dat <- DCATS::simulator_base(totals1, totals2, diri_s1, diri_s2, simil_mat)
-dcats_fit(sim_dat[[1]], sim_dat[[2]], confuse_mat, n_samples = 100)
+dcats_betabin(sim_dat[[1]], sim_dat[[2]], simil_mat, n_samples = 100)
 
 }
