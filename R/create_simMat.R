@@ -12,9 +12,9 @@
 #' @export
 #'
 #' @examples
-#' get_similarity_mat(4, 0.1)
+#' create_simMat(4, 0.1)
 #' 
 
-get_similarity_mat <- function(K, confuse_rate) {
+create_simMat <- function(K, confuse_rate) {
   diag(K) * (1 - confuse_rate) + confuse_rate * (1 - diag(K)) / (K - 1)
 }

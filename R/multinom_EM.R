@@ -20,7 +20,7 @@
 #'
 #' @examples
 #' X = c(100, 300, 1500, 500, 1000)
-#' simMM = get_similarity_mat(5, confuse_rate=0.2)
+#' simMM = create_simMat(5, confuse_rate=0.2)
 #' multinom_EM(X, simMM)
 #' 
 multinom_EM <- function(X, simMM, min_iter=10, max_iter=1000,

@@ -28,7 +28,7 @@
 #' totals2 = c(250, 700, 1100)
 #' diri_s1 = rep(1, K) * 20
 #' diri_s2 = rep(1, K) * 20
-#' simil_mat = get_similarity_mat(K, confuse_rate=0.2)
+#' simil_mat = create_simMat(K, confuse_rate=0.2)
 #' sim_dat <- DCATS::simulator_base(totals1, totals2, diri_s1, diri_s2, simil_mat)
 #' dcats_betabin(sim_dat[[1]], sim_dat[[2]], simil_mat, n_samples = 100)
 #' 

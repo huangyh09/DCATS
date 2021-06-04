@@ -41,7 +41,7 @@ An EM algorithm to fit a multinomial with maximum likelihood
 }
 \examples{
 X = c(100, 300, 1500, 500, 1000)
-simMM = get_similarity_mat(5, confuse_rate=0.2)
+simMM = create_simMat(5, confuse_rate=0.2)
 multinom_EM(X, simMM)
 
 }
