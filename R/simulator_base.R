@@ -28,7 +28,7 @@
 #' diri_s1 = rep(1, K) * 20
 #' diri_s2 = rep(1, K) * 20
 #' confuse_rate = 0.2
-#' simil_mat = diag(K) * (1 - confuse_rate) + confuse_rate * (1 - diag(K)) / 3
+#' simil_mat = create_simMat(2, 0.2)
 #' sim_dat <- simulator_base(totals1, totals2, diri_s1, diri_s2, simil_mat)
 #' 
 simulator_base <- function(totals_cond1, totals_cond2,
