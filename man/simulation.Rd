@@ -10,7 +10,8 @@ A list with 5 items:
   \item{numb_cond1}{the count matrix of condition 1}
   \item{numb_cond2}{the count matrix of condition 2}
   \item{knn_mat}{the similariy matrix}
-  \item{knnGraphs}{the knn graphs information used to calculate the similarity matrix.}
+  \item{knnGraphs}{the knn graphs information used to calculate the 
+  similarity matrix.}
   \item{labels}{the clusters' label for each simulated single cell}
 }
 }
@@ -18,7 +19,8 @@ A list with 5 items:
 simulation
 }
 \description{
-A dataset containing the count matrices, the similarity matrix and other variables used to generate the similarity matrix 
+A dataset containing the count matrices, the similarity matrix and other 
+variables used to generate the similarity matrix 
 from a simulated single cell RNA sequencing data with two conditions
 }
 \keyword{datasets}

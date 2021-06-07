@@ -1,7 +1,9 @@
 #' Count matrices of intestinal epithelial scRNA-seq data from three conditions
 #'
-#' A dataset containing the count matrices, the similarity matrix and other variables used to generate the similarity matrix 
-#' from intestinal epithelial single cell RNA sequencing data with three condition
+#' A dataset containing the count matrices, the similarity matrix and other 
+#' variables used to generate the similarity matrix 
+#' from intestinal epithelial single cell RNA sequencing data with 
+#' three condition
 #'
 #' @format A list with 7 items:
 #' \describe{
@@ -18,8 +20,10 @@
 
 #' Count matrices of 8 pooled lupus patient samples within two conditions
 #'
-#' A dataset containing the count matrices, the similarity matrix and other variables used to generate the similarity matrix 
-#' from single cell RNA sequencing data of 8 pooled lupus patient samples within two conditions
+#' A dataset containing the count matrices, the similarity matrix and other 
+#' variables used to generate the similarity matrix 
+#' from single cell RNA sequencing data of 8 pooled lupus patient samples within 
+#' two conditions
 #'
 #' @format A list with 5 items:
 #' \describe{
@@ -34,7 +38,8 @@
 
 #' Simulated dataset with two conditions
 #'
-#' A dataset containing the count matrices, the similarity matrix and other variables used to generate the similarity matrix 
+#' A dataset containing the count matrices, the similarity matrix and other 
+#' variables used to generate the similarity matrix 
 #' from a simulated single cell RNA sequencing data with two conditions
 #'
 #' @format A list with 5 items:
@@ -42,7 +47,8 @@
 #'   \item{numb_cond1}{the count matrix of condition 1}
 #'   \item{numb_cond2}{the count matrix of condition 2}
 #'   \item{knn_mat}{the similariy matrix}
-#'   \item{knnGraphs}{the knn graphs information used to calculate the similarity matrix.}
+#'   \item{knnGraphs}{the knn graphs information used to calculate the 
+#'   similarity matrix.}
 #'   \item{labels}{the clusters' label for each simulated single cell}
 #' }
 "simulation"

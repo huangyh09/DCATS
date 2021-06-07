@@ -21,7 +21,9 @@ A list with 5 items:
 Kang2017
 }
 \description{
-A dataset containing the count matrices, the similarity matrix and other variables used to generate the similarity matrix 
-from single cell RNA sequencing data of 8 pooled lupus patient samples within two conditions
+A dataset containing the count matrices, the similarity matrix and other 
+variables used to generate the similarity matrix 
+from single cell RNA sequencing data of 8 pooled lupus patient samples within 
+two conditions
 }
 \keyword{datasets}

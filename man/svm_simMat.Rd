@@ -22,6 +22,6 @@ by support vector machine with 5-fold cross validation.
 library(tidymodels)
 library(tidyverse)
 data(simulation)
-knn_mat = knn_simMat(simulation$knnGraphs, simulation$labels)
+svm_mat = svm_simMat(Kang2017$svmDF)
 
 }

@@ -23,7 +23,9 @@ A list with 7 items:
 Haber2017
 }
 \description{
-A dataset containing the count matrices, the similarity matrix and other variables used to generate the similarity matrix 
-from intestinal epithelial single cell RNA sequencing data with three condition
+A dataset containing the count matrices, the similarity matrix and other 
+variables used to generate the similarity matrix 
+from intestinal epithelial single cell RNA sequencing data with 
+three condition
 }
 \keyword{datasets}
