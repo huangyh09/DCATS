@@ -51,7 +51,7 @@ dcats_betabin <- function(counts1, counts2, similarity_mat=NULL, n_samples=50,
     ## using estimated the latent cell counts
     counts1_latent = counts1
     counts2_latent = counts2
-    if(!is.null(n_samples)) {
+    if(!is.null(similarity_mat)) {
         for (i in seq_len(nrow(counts1))) {
             counts1_latent[i, ] <- sum(counts1[i, ]) *
                 multinom_EM(counts1[i, ], similarity_mat, verbose = FALSE)$mu
