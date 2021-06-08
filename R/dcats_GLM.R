@@ -59,9 +59,11 @@ dcats_GLM <- function(count_mat, design_mat, similarity_mat=NULL, n_samples=50,
   
   ## using estimated the latent cell counts
   count_latent = count_mat
-  for (i in seq_len(nrow(count_mat))) {
-    count_latent[i, ] <- sum(count_mat[i, ]) *
-      multinom_EM(count_mat[i, ], similarity_mat, verbose = FALSE)$mu
+  if(!is.null(n_samples)) {
+    for (i in seq_len(nrow(count_mat))) {
+      count_latent[i, ] <- sum(count_mat[i, ]) *
+        multinom_EM(count_mat[i, ], similarity_mat, verbose = FALSE)$mu
+    }
   }
   
   K <- ncol(count_mat) ## number of cell types

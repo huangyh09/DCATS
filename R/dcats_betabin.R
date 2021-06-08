@@ -51,15 +51,17 @@ dcats_betabin <- function(counts1, counts2, similarity_mat=NULL, n_samples=50,
     ## using estimated the latent cell counts
     counts1_latent = counts1
     counts2_latent = counts2
-    for (i in seq_len(nrow(counts1))) {
-        counts1_latent[i, ] <- sum(counts1[i, ]) *
-            multinom_EM(counts1[i, ], similarity_mat, verbose = FALSE)$mu
+    if(!is.null(n_samples)) {
+        for (i in seq_len(nrow(counts1))) {
+            counts1_latent[i, ] <- sum(counts1[i, ]) *
+                multinom_EM(counts1[i, ], similarity_mat, verbose = FALSE)$mu
+        }
+        for (i in seq_len(nrow(counts2))) {
+            counts2_latent[i, ] <- sum(counts2[i, ]) *
+                multinom_EM(counts2[i, ], similarity_mat, verbose = FALSE)$mu
+        }
     }
-    for (i in seq_len(nrow(counts2))) {
-        counts2_latent[i, ] <- sum(counts2[i, ]) *
-            multinom_EM(counts2[i, ], similarity_mat, verbose = FALSE)$mu
-    }
-
+    
     ## number of cell types
     K <- ncol(counts1)
     if (is.null(similarity_mat)) {
