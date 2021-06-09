@@ -18,10 +18,6 @@ information used to cluster cells. It is estimated by the misclassification
 rate from cluster i to j comparing the original labels with the labels predicted 
 by support vector machine with 5-fold cross validation.
 }
-\examples{
-library(tidymodels)
-library(tidyverse)
-data(simulation)
-svm_mat = svm_simMat(Kang2017$svmDF)
-
+\note{
+`tidyverse` and `tidymodels` need to be load to allow this function to work
 }

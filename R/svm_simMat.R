@@ -13,37 +13,7 @@
 #' 
 #' @export
 #'
-#' @examples
-#' library(tidymodels)
-#' library(tidyverse)
-#' data(simulation)
-#' svm_mat = svm_simMat(Kang2017$svmDF)
-#' 
-
-# svm_simMat = function(dataframe){
-#   cv <- rsample::vfold_cv(dataframe, v = 5)
-#   recipe <- recipes::recipe(clusterRes ~ ., data = dataframe)
-#   model <- parsnip::svm_rbf() %>% 
-#     parsnip::set_mode("classification") %>%
-#     parsnip::set_engine("kernlab")
-#   workflow <- workflows::workflow() %>%
-#     workflows::add_recipe(recipe) %>%
-#     workflows::add_model(model)
-#   predDF = data.frame()
-#     for (i in 1:5) {
-#       onefold_split = cv[[1]][[i]]
-#       fit <- workflows::workflow %>%
-#         tune::last_fit(onefold_split)
-#       pred = fit %>% 
-#         tune::collect_predictions() %>% 
-#         dplyr::mutate(pred = .pred_class) %>% 
-#         dplyr::select(pred, clusterRes)
-#       predDF = rbind(predDF, pred)
-#     }
-#     conf.mat <- table(predDF$clusterRes, predDF$pred)
-#     simil_mat <- t(t(conf.mat)/apply(conf.mat,2,sum))
-#   return(simil_mat)
-# }
+#' @note `tidyverse` and `tidymodels` need to be load to allow this function to work
 
 svm_simMat = function(dataframe){
     cv <- vfold_cv(dataframe, v = 5)
