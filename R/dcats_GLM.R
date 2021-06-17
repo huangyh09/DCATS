@@ -59,7 +59,7 @@ dcats_GLM <- function(count_mat, design_mat, similarity_mat=NULL, n_samples=50,
   
   ## using estimated the latent cell counts
   count_latent = count_mat
-  if(!is.null(n_samples)) {
+  if(!is.null(similarity_mat)) {
     for (i in seq_len(nrow(similarity_mat))) {
       count_latent[i, ] <- sum(count_mat[i, ]) *
         multinom_EM(count_mat[i, ], similarity_mat, verbose = FALSE)$mu
