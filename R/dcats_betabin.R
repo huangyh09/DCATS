@@ -115,9 +115,9 @@ dcats_betabin <- function(counts1, counts2, similarity_mat=NULL, n_samples=50,
     intercept_err <- matrix(NA, n_samples, K)
     total_all <- c(rowSums(counts1_use), rowSums(counts2_use))
     label_all <- c(rep(1, nrow(counts1_use)), rep(0, nrow(counts2_use)))
-    for (ir in seq_len(n_samples)) {
+    for (ir in seq_len(n_samples)) {           ## for each sampling
         idx <- seq(1, length(total_all), n_samples) + ir - 1
-        for (i in seq_len(K)) {
+        for (i in seq_len(K)) {                ## for each cluster
             n1 <- c(counts1_use[, i], counts2_use[, i])[idx]
             df <- data.frame(n1 = n1, n2 = total_all[idx] - n1,
                              label = label_all[idx])

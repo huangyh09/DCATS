@@ -98,8 +98,8 @@ dcats_GLM <- function(count_mat, design_mat, similarity_mat=NULL, n_samples=50,
   count_use = round(count_use)
   
   # Test each factor
-  for (m in seq_len(ncol(count_use))) {
-    for (k in seq_len(ncol(design_mat))) {
+  for (m in seq_len(ncol(count_use))) {          ## for each cluster
+    for (k in seq_len(ncol(design_mat))) {       ## for each factor
       df_use <- data.frame(n1 = count_use[, m], total=rowSums(count_use))
       df_use <- cbind(df_use, as.data.frame(design_mat)[, k, drop=FALSE])
 
