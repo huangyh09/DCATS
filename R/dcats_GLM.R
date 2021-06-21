@@ -114,7 +114,7 @@ dcats_GLM <- function(count_mat, design_mat, similarity_mat=NULL, n_samples=50,p
         fm0 <- aod::betabin(cbind(n1, total-n1) ~ 1, ~ 1, data = df_tmp)
         #formula_fix <- as.formula(paste0('cbind(n1, total-n1)', '~ 1+', colnames(design_mat)[k], sep=''))
         formula_fix <- as.formula(paste0('cbind(n1, total-n1)', ' ~ ', colnames(design_mat)[k], sep=''))
-        fm1 <- aod::betabin(formula_fix, ~ 1, data = df_tmp)
+        fm1 <- aod::betabin(formula_fix, ~ 1, data = df_tmp, warnings = FALSE)
         
         ## ignore the fitting if the hessian matrix is singular
         if (length(fm1@varparam) < 4 || is.na(fm1@varparam[2, 2])) {next}

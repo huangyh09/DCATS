@@ -56,10 +56,10 @@ test_that("whether dcats_GLM works as we expected", {
   simil_mat = create_simMat(K, confuse_rate=0.1)
   sim_dat <- DCATS::simulator_base(totals1, totals2, diri_s1, diri_s2, simil_mat)
   sim_count = rbind(sim_dat$numb_cond1, sim_dat$numb_cond2)
-  sim_design = matrix(c("g1", "g1", "g1", "g2", "g2", "g2", "g2"), ncol = 1)
+  sim_design = matrix(c("g1", "g1", "g1", "g1", "g2", "g2", "g2"), ncol = 1)
   res = dcats_GLM(sim_count, sim_design)
 
-  expect_equal(as.vector(res$pvals) > 0.05, c(TRUE, FALSE, FALSE))
+  expect_equal(as.vector(res$LRT_pvals) > 0.05, c(TRUE, FALSE, FALSE))
 
 })
 
