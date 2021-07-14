@@ -1,0 +1,47 @@
+---
+title: "Differential Composition Analysis with DCATS"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Differential Composition Analysis with DCATS}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+`DCATS` contains methods to detect the differential composition
+abundances between multiple conditions in singel-cell experiments.
+
+```{r setup, warning=FALSE}
+library(DCATS)
+```
+
+## Installation and loading
+
+### From R
+
+The **latest** `DCATS` package can be conveniently installed using the
+[`devtools`](https://www.rstudio.com/products/rpackages/devtools/)
+package thus:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("huangyh09/DCATS", build_vignettes = TRUE)
+```
+
+The main function of `DCATS` is the function `dcats_GLM`. This function requires three input components. The first one is a m $\times$ n count matrix where m denotes we have m samples, n denotes we have n cell types. The second component is a data frame indicating the factors we want to test on. Different factors classify samples into different conditions. The third one is a similarity matrix is a matrix $\{m_{ij}\}$ indicating the misclassification rate between the $i$ cell type and the $j$ cell type. 
+
+**Noted**: The misclassfication correction and the boostrap sampling process in `dcats_GLM`. If the similarity matrix is absent, the differential abundances analysis will be done based on the observed cell count number.
+
+## Simulate Data
+
+Here, we used a built-in simulator in `DCATS` to simulate the data for following analysis. 
+
+
+

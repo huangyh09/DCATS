@@ -1,19 +1,14 @@
 
-[![Linux Build
-Status](https://travis-ci.org/huangyh09/DCATS.svg?branch=master)](https://travis-ci.org/huangyh09/DCATS)
-[![codecov.io](https://codecov.io/github/huangyh09/DCATS/coverage.svg?branch=master)](https://codecov.io/github/huangyh09/DCATS/?branch=master)
-
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# DCATS: Differential Composition Analysis Transformed by a Similarity matrix
+# DCATS
 
 <!-- badges: start -->
 
 <!-- badges: end -->
 
 This R package contains methods to detect the differential composition
-abundances between two conditions in singel-cell RNA-seq experiments,
-with or without replicates.
+abundances between multiple conditions in singel-cell experiments.
 
 ## Installation
 
@@ -41,5 +36,4 @@ load `DCATS` and then browse the vignettes:
 ``` r
 library(DCATS)
 browseVignettes("DCATS")
-#> No vignettes found by browseVignettes("DCATS")
 ```
